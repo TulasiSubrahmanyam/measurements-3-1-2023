@@ -124,26 +124,28 @@
             let drawingLine = false
             const measurementLabels = {}
 
-            window.addEventListener('keydown', function (event) {
-                if (event.key === 'Control') {
+            window.addEventListener('touchstart', function (event) {
+                console.log('start')
+                /*if (event.key === 'Control') {
                     ctrlDown = true
                     controls.enabled = false
                     renderer.domElement.style.cursor = 'crosshair'
-                }
+                }*/
             })
 
-            window.addEventListener('keyup', function (event) {
-                if (event.key === 'Control') {
+            window.addEventListener('touchend', function (event) {
+                console.log('end')
+                /*if (event.key === 'Control') {
                     ctrlDown = false
                     controls.enabled = true
-                    renderer.domElement.style.cursor = 'pointer'
+                    renderer.domElement.style.cursor = 'pointer'*/
                     if (drawingLine) {
                         //delete the last line because it wasn't committed
                         scene.remove(line)
                         scene.remove(measurementLabels[lineId])
                         drawingLine = false
                     }
-                }
+                //}
             })
 
             const raycaster = new THREE.Raycaster()
@@ -196,9 +198,11 @@
                     }
                 }
             }
-            document.addEventListener('mousemove', onDocumentMouseMove, false)
+            document.addEventListener('touchmove', onDocumentMouseMove, false)
             function onDocumentMouseMove(event) {
-                event.preventDefault()
+                console.log('move')
+                //event.preventDefault()
+                let touches=event.touches
                 mouse.x = (event.clientX / window.innerWidth) * 2 - 1
                 mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
                 if (drawingLine) {
