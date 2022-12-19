@@ -10,15 +10,31 @@
             #instructions {
                 color: white;
                 position: absolute;
-                left: 100px;
+              padding: 20px;
                 top: 10px;
                 font-family: monospace;
+                width: 100%;
+                height: 100px;
+                border-radius: 20px;
             }
 
             .measurementLabel {
                 font-family: monospace;
                 background-color: black;
                 color: white;
+            }
+            #button-click{
+                color:white;
+                background-color: red;
+                border-radius: 10px;
+           
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                top: 300px;
+                margin: 20px;
+                height: 40px;
+                
             }
         </style>
        
@@ -37,7 +53,10 @@
         <div id="instructions">
             Press CTRL + Left Mouse Click to start drawing a line. <br />Continue to hold CTRL and Left Mouse
             Click again to mark the end of the line.
+
+            <button id="button-click" value="off">Measurements </button>
         </div>
+        
 
         <script type="module">
             import * as THREE from './three.module.js';
@@ -46,6 +65,7 @@
             import { RGBELoader } from './RGBELoader.js';
             import { CSS2DRenderer, CSS2DObject } from './CSS2DRenderer.js';
 
+          
 
             const scene = new THREE.Scene()
 
@@ -80,8 +100,11 @@
 
             const controls = new OrbitControls(camera, renderer.domElement)
             controls.enableDamping = true
-
-            const pickableObjects = new Array()
+            controls.touches.TWO = THREE.TOUCH.DOLLY_ROTATE;
+          
+            
+           
+           const pickableObjects = new Array()
             const loader = new GLTFLoader()
             loader.load(
                 './ErgonomicTableScene_Nov_22_22.glb',
@@ -118,48 +141,107 @@
                 render()
             }
 
+            const raycaster = new THREE.Raycaster()
+            let intersects
+            const touchs= new THREE.Vector2()
+           
             let ctrlDown = false
             let lineId = 0
             let line
             let drawingLine = false
+           
+            let pickpoint=null
             const measurementLabels = {}
-
-            window.addEventListener('touchstart', function (event) {
-                console.log('start')
-                /*if (event.key === 'Control') {
-                    ctrlDown = true
-                    controls.enabled = false
-                    renderer.domElement.style.cursor = 'crosshair'
-                }*/
-            })
-
-            window.addEventListener('touchend', function (event) {
-                console.log('end')
-                /*if (event.key === 'Control') {
-                    ctrlDown = false
-                    controls.enabled = true
-                    renderer.domElement.style.cursor = 'pointer'*/
-                    if (drawingLine) {
-                        //delete the last line because it wasn't committed
-                        scene.remove(line)
-                        scene.remove(measurementLabels[lineId])
-                        drawingLine = false
-                    }
-                //}
-            })
-
-            const raycaster = new THREE.Raycaster()
-            let intersects
-            const mouse = new THREE.Vector2()
             
-            renderer.domElement.addEventListener('pointerdown', onClick, false)
-            function onClick(event) {
-                if (ctrlDown) {
-                    raycaster.setFromCamera(mouse, camera)
+            let buttonClicks=document.getElementById("button-click")
+
+
+            buttonClicks.onclick=function(event){
+                if(buttonClicks.value==="off"){
+                console.log("button active")
+                buttonClicks.value="on"
+            //  controls.enabled=false
+                buttonClicks.style.backgroundColor="green"
+                window.addEventListener('touchstart', touchon,false)
+                window.addEventListener('touchend',  touchoff,false)
+                document.addEventListener('touchmove', onDocumentTouchMove,false)    
+                renderer.domElement.addEventListener('pointerdown',onlyClick,false)
+                //document.addEventListener('mousemove', onDocumentMouseMove, false)
+                
+            }else if(buttonClicks.value==="on"){
+                console.log("inactive button")
+                //controls.enabled=true
+                buttonClicks.value='off'
+                buttonClicks.style.backgroundColor="red"
+                scene.remove(line)
+                scene.remove(measurementLabels[lineId])
+                
+                window.removeEventListener('touchstart', touchon,false)
+                window.removeEventListener('touchend',  touchoff,false)
+                document.removeEventListener('touchmove', onDocumentTouchMove,false)    
+                renderer.domElement.removeEventListener('pointerdown',onlyClick,false)
+            }
+                
+            }
+
+       
+
+         
+          
+            
+            
+            function touchon(e) {
+                console.log(e.type)
+                event.preventDefault()
+                ctrlDown=true
+                   controls.enabled=false
+                   renderer.domElement.style.cursor = 'crosshair' 
+                   touchs.x= (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+                    touchs.y= -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+          
+            }
+
+              function touchoff(event) {
+                console.log(event.type)
+               
+        
+                    ctrlDown = false
+                    controls.enabled=true
+                
+                    console.log("control-2")
+                    renderer.domElement.style.cursor = 'pointer'
+                
+                    //if (drawingLine) {
+                        //delete the last line because it wasn't committed
+                        // scene.remove(line)
+                         //scene.remove(measurementLabels[lineId])
+                        // drawingLine = false
+                        
+                       // console.log("remove-line")
+                   // }
+                
+            }
+
+            
+           
+
+          
+            
+
+           
+           function onlyClick(event) {
+           
+                    touchs.x= (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+                    touchs.y= -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+                
+                if (!ctrlDown) {
+                    raycaster.setFromCamera(touchs, camera)
+                    console.log("raycaster")
                     intersects = raycaster.intersectObjects(pickableObjects, false)
                     if (intersects.length > 0) {
                         if (!drawingLine) {
                             //start the line
+                            console.log("!drawline")
                             const points = []
                             points.push(intersects[0].point)
                             points.push(intersects[0].point.clone())
@@ -169,12 +251,15 @@
                                 new THREE.LineBasicMaterial({
                                     color: 0xff0000,
                                     transparent: true,
-                                    opacity: 0.75,
+                                    opacity: 1,
                                     lineWidth : 1
                                     // depthTest: false,
                                     // depthWrite: false
+                                   
                                 })
+                            
                             )
+                            event.preventDefault()
                             line.frustumCulled = false
                             scene.add(line)
                             const measurementDiv = document.createElement('div')
@@ -183,8 +268,9 @@
                             const measurementLabel = new CSS2DObject(measurementDiv)
                             measurementLabel.position.copy(intersects[0].point)
                             measurementLabels[lineId] = measurementLabel
-                            scene.add(measurementLabels[lineId])
+                           scene.add(measurementLabels[lineId])
                             drawingLine = true
+                            console.log("raycaster-1") 
                         } else {
                             //finish the line
                             const positions = line.geometry.attributes.position.array
@@ -194,19 +280,25 @@
                             line.geometry.attributes.position.needsUpdate = true
                             lineId++
                             drawingLine = false
+                            console.log("raycaster-2") 
                         }
                     }
                 }
             }
-            document.addEventListener('touchmove', onDocumentMouseMove, false)
-            function onDocumentMouseMove(event) {
-                console.log('move')
-                //event.preventDefault()
-                let touches=event.touches
-                mouse.x = (event.clientX / window.innerWidth) * 2 - 1
-                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
+     
+            function onDocumentTouchMove(e) {
+                console.log(e.type)
+                event.preventDefault()  
+            //let touches=event.pointer
+          
+           
+                touchs.x= (event.targetTouches[0].clientX / renderer.domElement.clientWidth) * 2 - 1;
+                touchs.y= -(event.targetTouches[0].clientY / renderer.domElement.clientHeight) * 2 + 1;
+                
+                //targetTouches.x = +(event.targetTouches[0].pageX / window.innerWidth) * 2 -1;
+               // targetTouches.y = -(event.targetTouches[0].pageY / window.innerHeight) * 2 + 1;
                 if (drawingLine) {
-                    raycaster.setFromCamera(mouse, camera)
+                    raycaster.setFromCamera(touchs, camera)
                     intersects = raycaster.intersectObjects(pickableObjects, false)
                     if (intersects.length > 0) {
                         const positions = line.geometry.attributes.position.array
@@ -223,9 +315,11 @@
                         const distance = v0.distanceTo(v1)
                         measurementLabels[lineId].element.innerText = distance.toFixed(2) + 'm'
                         measurementLabels[lineId].position.lerpVectors(v0, v1, 0.5)
+                        console.log("touchmove")
                     }
                 }
             }
+           
 
             var animate = function () {
                 requestAnimationFrame(animate)
