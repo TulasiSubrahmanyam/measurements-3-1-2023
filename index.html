@@ -100,7 +100,7 @@
 
             const controls = new OrbitControls(camera, renderer.domElement)
             controls.enabled=true
-            controls.enableDamping = true
+          
             //controls.touches.TWO = THREE.TOUCH.DOLLY_ROTATE;
           
             
@@ -194,8 +194,11 @@
             function touchon(e) {
                 console.log(e.type)
                 event.preventDefault()
+                controls.enableDamping = true
+
                 ctrlDown=true
                    controls.enabled=false
+                   controls.enableZoom=true
                    renderer.domElement.style.cursor = 'crosshair' 
                    touchs.x= (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
                     touchs.y= -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
@@ -203,25 +206,16 @@
                     console.log(e.touches.length)
                     if (event.touches.length == 2) {
 
-                console.log('2');
-                _state = STATE.TOUCH_ZOOM_PAN;
-                var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-                var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-                _touchZoomDistanceEnd = _touchZoomDistanceStart = Math.sqrt( dx * dx + dy * dy );
+                        console.log('2');
+                        _state = STATE.TOUCH_ZOOM_PAN;
+                        var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+                        var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+                        _touchZoomDistanceEnd = _touchZoomDistanceStart = Math.sqrt( dx * dx + dy * dy );
 
-                }
+                  }
           
             }
-            function setZoom(fov){
-
-                    camera.fov = fov;
-
-                    if(camera.fov < 30) camera.fov = 30;
-                    if(camera.fov > 100) camera.fov = 100;
-
-                    camera.updateProjectionMatrix();
-
-                    }
+           
 
               function touchoff(event) {
                 console.log(event.type)
