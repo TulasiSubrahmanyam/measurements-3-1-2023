@@ -64,7 +64,7 @@
             import { GLTFLoader } from './GLTFLoader.js';
             import { RGBELoader } from './RGBELoader.js';
             import { CSS2DRenderer, CSS2DObject } from './CSS2DRenderer.js';
-
+           // import { TransformControls } from './TransformControls.js';
           
 
             const scene = new THREE.Scene()
@@ -98,12 +98,14 @@
             document.body.appendChild(labelRenderer.domElement)
 
 
-            const controls = new OrbitControls(camera, renderer.domElement)
+           const controls = new OrbitControls(camera, renderer.domElement)
             controls.enabled=true
-            controls.enableDamping=true
-           // controls.touches.TWO = THREE.TOUCH.DOLLY_ROTATE;
+            controls.touches = {
+                    ONE: THREE.TOUCH.ROTATE,
+                    TWO: THREE.TOUCH.DOLLY_PAN
+                }
+           
           
-            
            
            const pickableObjects = new Array()
             const loader = new GLTFLoader()
@@ -161,9 +163,9 @@
                 if(buttonClicks.value==="off"){
                 console.log("button active")
                 buttonClicks.value="on"
-            //  controls.enabled=false
+              controls.enabled=false
                 buttonClicks.style.backgroundColor="green"
-                window.addEventListener('pointerdown', touchon,false)
+                window.addEventListener('touchstart', touchon,false)
                 window.addEventListener('touchend',  touchoff,false)
                 document.addEventListener('touchmove', onDocumentTouchMove,false)    
                 renderer.domElement.addEventListener('pointerdown',onlyClick,false)
@@ -171,13 +173,13 @@
                 
             }else if(buttonClicks.value==="on"){
                 console.log("inactive button")
-                //controls.enabled=true
+                controls.enabled=true
                 buttonClicks.value='off'
                 buttonClicks.style.backgroundColor="red"
                 scene.remove(line)
                 scene.remove(measurementLabels[lineId])
                 
-                window.removeEventListener('pointerdown', touchon,false)
+                window.removeEventListener('touchstart', touchon,false)
                 window.removeEventListener('touchend',  touchoff,false)
                 document.removeEventListener('touchmove', onDocumentTouchMove,false)    
                 renderer.domElement.removeEventListener('pointerdown',onlyClick,false)
@@ -192,25 +194,16 @@
             
                 console.log("world co-ordinates",p)
                 console.log("screen",touchs)
-                 
+                console.log("touchplaced :",'x: ' + event.touches[0].pageX + ', y: ' + event.touches[0].pageY)
          
-              if(e.type==="pointerdown"){
+              if(e.type==="touchstart"){
                    ctrlDown=true
-                   controls.enabled=false
+                  controls.enabled=false
                    renderer.domElement.style.cursor = 'crosshair' 
-                   
-             
+                   console.log(e.touches.length)
+                  // controls.enableZoom = true;
                  }
-                    //console.log(e.touches.length)
-                    /*if (event.touches.length === 2) {
-
-                        console.log('zoom');
-                         let state = STATE.TOUCH_ZOOM_PAN;
-                        var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-                        var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-                        _touchZoomDistanceEnd = _touchZoomDistanceStart = Math.sqrt( dx * dx + dy * dy );
-
-                  }*/
+                
           
             }
            
@@ -219,18 +212,19 @@
                 console.log(event.type)
                  
                     ctrlDown = false
-                    controls.enabled=true
-                    controls.enableZoom=true
+                     controls.enabled=true
+                   // controls.enableZoom=true
                     renderer.domElement.style.cursor = 'pointer'
-                  
-                  //  if (drawingLine) {
+                    
+                    if (drawingLine) {
                         //delete the last line because it wasn't committed
                         // scene.remove(line)
                          //scene.remove(measurementLabels[lineId])
-                         //drawingLine = false
-                         
-                       // console.log("remove-line")
-                  //  }
+                         drawingLine = false
+                         controls.enabled=true
+                         event.preventDefault()
+                        console.log("complete drwaline")
+                   }
                 
             }
 
