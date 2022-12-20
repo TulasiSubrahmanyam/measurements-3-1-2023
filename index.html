@@ -163,7 +163,7 @@
                 if(buttonClicks.value==="off"){
                 console.log("button active")
                 buttonClicks.value="on"
-              controls.enabled=false
+              controls.enabled=true
                 buttonClicks.style.backgroundColor="green"
                 window.addEventListener('touchstart', touchon,false)
                 window.addEventListener('touchend',  touchoff,false)
@@ -203,7 +203,7 @@
                    console.log(e.touches.length)
                   // controls.enableZoom = true;
                  }
-                
+               
           
             }
            
