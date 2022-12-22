@@ -835,6 +835,7 @@ class Vector2 {
 		this.y = Math.max( min.y, Math.min( max.y, this.y ) );
 
 		return this;
+	
 
 	}
 

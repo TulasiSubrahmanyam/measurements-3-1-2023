@@ -36,6 +36,15 @@
                 height: 40px;
                 
             }
+            .orientation-helper-in-scene {
+			position: fixed;
+			bottom: 50px;
+			right: 50px;
+			width: 300px;
+			height: 300px;
+			z-index: 0;
+            
+		}
         </style>
        
         <script type="importmap">
@@ -48,13 +57,14 @@
 
     </head>
 
-    <body>
+    <body id="container">
 
         <div id="instructions">
             Press CTRL + Left Mouse Click to start drawing a line. <br />Continue to hold CTRL and Left Mouse
             Click again to mark the end of the line.
-
+            
             <button id="button-click" value="off">Measurements </button>
+
         </div>
         
 
@@ -64,6 +74,7 @@
             import { GLTFLoader } from './GLTFLoader.js';
             import { RGBELoader } from './RGBELoader.js';
             import { CSS2DRenderer, CSS2DObject } from './CSS2DRenderer.js';
+            import { OrientationHelper } from './OrientationHelper.js';
            // import { TransformControls } from './TransformControls.js';
           
 
@@ -80,7 +91,7 @@
             camera.position.x = 15
             camera.position.y = 15
             camera.position.z = 15
-
+            camera.lookAt( 0, 0, 0 );
 
             const renderer = new THREE.WebGLRenderer()
             renderer.physicallyCorrectLights = true;
@@ -99,13 +110,13 @@
 
 
            const controls = new OrbitControls(camera, renderer.domElement)
-            controls.enabled=true
-            controls.touches = {
+           controls.enabled=true
+           /* controls.touches = {
                     ONE: THREE.TOUCH.ROTATE,
                     TWO: THREE.TOUCH.DOLLY_PAN
-                }
+                }*/
            
-          
+          const container=document.getElementById("container")
            
            const pickableObjects = new Array()
             const loader = new GLTFLoader()
@@ -143,10 +154,35 @@
                 labelRenderer.setSize(window.innerWidth, window.innerHeight)
                 render()
             }
+              
+           const axesHelper = new THREE.AxesHelper(0.5);
+          
+		   scene.add( axesHelper );
+          
+    // orientation helper
+    const ohOptions = {
+        className: 'orientation-helper-in-scene'
+        }, 
+        ohLabels = {
+            px: 'East',
+            nx: 'West',
+            pz: 'South',
+            nz: 'North',
+            py: 'Sky',
+            ny: 'Ground'
+        };
+         let _lastCLick = Date.now();
+         let orientationHelper = new OrientationHelper( camera, controls, ohOptions, ohLabels );
+            orientationHelper.addEventListener( 'change', onOrientationHelperChange );
+            orientationHelper.addEventListener( 'click', onOrientationHelperClick );
 
+            document.body.appendChild(orientationHelper.domElement);
+        
+          
             const raycaster = new THREE.Raycaster()
             let intersects
             const touchs= new THREE.Vector2()
+            
         
             let ctrlDown = false
             let lineId = 0
@@ -161,9 +197,9 @@
 
             buttonClicks.onclick=function(event){
                 if(buttonClicks.value==="off"){
-                console.log("button active")
+                console.log("Measurement Mode Active")
                 buttonClicks.value="on"
-              controls.enabled=true
+                controls.enabled=false
                 buttonClicks.style.backgroundColor="green"
                 window.addEventListener('touchstart', touchon,false)
                 window.addEventListener('touchend',  touchoff,false)
@@ -172,7 +208,7 @@
                 //document.addEventListener('mousemove', onDocumentMouseMove, false)
                 
             }else if(buttonClicks.value==="on"){
-                console.log("inactive button")
+                console.log("Measurement Mode Inactive")
                 controls.enabled=true
                 buttonClicks.value='off'
                 buttonClicks.style.backgroundColor="red"
@@ -181,27 +217,42 @@
                 
                 window.removeEventListener('touchstart', touchon,false)
                 window.removeEventListener('touchend',  touchoff,false)
-                document.removeEventListener('touchmove', onDocumentTouchMove,false)    
+               document.removeEventListener('touchmove', onDocumentTouchMove,false)    
                 renderer.domElement.removeEventListener('pointerdown',onlyClick,false)
             }
                 
             }
-           
-      
+
+            function deteremineScreenCoordinate(object) {
+                    var vector = new THREE.Vector3();
+                    vector.setFromMatrixPosition(object.matrixWorld);
+                    vector.project(camera);
+
+                    var width = window.innerWidth, height = window.innerHeight;
+                    var widthHalf = width / 2, heightHalf = height / 2;
+
+                    vector.x = ( vector.x * widthHalf ) + widthHalf;
+                    vector.y = -( vector.y * heightHalf ) + heightHalf;
+
+                    return vector;
+                    console.log(vector)
+                }
+
             function touchon(e) {
-                console.log(e.type)
-                const p = intersects[0].point
-            
-                console.log("world co-ordinates",p)
-                console.log("screen",touchs)
-                console.log("touchplaced :",'x: ' + event.touches[0].pageX + ', y: ' + event.touches[0].pageY)
-         
-              if(e.type==="touchstart"){
+                
+              //console.log("local co-ordinate",renderer.domElement.getBoundingClientRect())
+             
+              //  console.log("TouchPlaced :",'x: ' + event.touches[0].clientX + ', y: ' + event.touches[0].clientY)
+              
+              // console.log("container co-ordinates :",geometry.domElement.getBoundingClientRect())
+             console.log(" Touch Start Screen Co-ordinates",touchs)
+                if(e.type==="touchstart"){
+                    
                    ctrlDown=true
-                  controls.enabled=false
+                   controls.enabled=false
                    renderer.domElement.style.cursor = 'crosshair' 
-                   console.log(e.touches.length)
-                  // controls.enableZoom = true;
+                  // console.log(e.touches.length)
+                  
                  }
                
           
@@ -209,8 +260,10 @@
            
 
               function touchoff(event) {
-                console.log(event.type)
-                 
+                console.log("Touch End Screen Co-ordinates",touchs)
+                let P = intersects[0].point
+                console.log("Touch End world Co-ordinates",P)
+            
                     ctrlDown = false
                      controls.enabled=true
                    // controls.enableZoom=true
@@ -223,7 +276,7 @@
                          drawingLine = false
                          controls.enabled=true
                          event.preventDefault()
-                        console.log("complete drwaline")
+                        console.log("Completed Drawing Line")
                    }
                 
             }
@@ -235,7 +288,7 @@
            
                     touchs.x= (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
                     touchs.y= -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
-                
+                    
                 if (!ctrlDown) {
                     raycaster.setFromCamera(touchs, camera)
                     //console.log("raycaster")
@@ -243,7 +296,7 @@
                     if (intersects.length > 0) {
                         if (!drawingLine) {
                             //start the line
-                            console.log("!drawline")
+                            console.log("!Drawline")
                             const points = []
                             points.push(intersects[0].point)
                             points.push(intersects[0].point.clone())
@@ -254,9 +307,9 @@
                                     color: 0xff0000,
                                     transparent: true,
                                     opacity: 1,
-                                    lineWidth : 1
-                                    // depthTest: false,
-                                    // depthWrite: false
+                                    lineWidth : 4,
+                                   // depthTest: false,
+                                    // depthWrite: true
                                    
                                 })
                             
@@ -271,6 +324,8 @@
                             measurementLabel.position.copy(intersects[0].point)
                             measurementLabels[lineId] = measurementLabel
                            scene.add(measurementLabels[lineId])
+                           let P = intersects[0].point
+                           console.log("Touch Start World Co-ordinates",P)
                             drawingLine = true
                            // console.log("raycaster-1") 
                         } else {
@@ -290,12 +345,18 @@
             }
      
             function onDocumentTouchMove(e) {
-                console.log(e.type)
+              //  console.log("Touch Move")
                 event.preventDefault()  
         
                 touchs.x= (event.targetTouches[0].clientX / renderer.domElement.clientWidth) * 2 - 1;
                 touchs.y= -(event.targetTouches[0].clientY / renderer.domElement.clientHeight) * 2 + 1;
-                
+                if (event.targetTouches.length === 2) {
+                let hypo1 = Math.hypot((event.targetTouches[0].pageX - event.targetTouches[1].pageX),
+                                          (event.targetTouches[0].pageY - event.targetTouches[1].pageY));
+                  if (hypo === undefined) {
+                hypo = hypo1;
+                   }
+                  }
               
                 if (drawingLine) {
                     raycaster.setFromCamera(touchs, camera)
@@ -304,11 +365,7 @@
                        
                         const positions = line.geometry.attributes.position.array
                         const v0 = new THREE.Vector3(positions[0], positions[1], positions[2])
-                        const v1 = new THREE.Vector3(
-                            intersects[0].point.x,
-                            intersects[0].point.y,
-                            intersects[0].point.z
-                        )
+                        const v1 = new THREE.Vector3( intersects[0].point.x, intersects[0].point.y, intersects[0].point.z )
                         positions[3] = intersects[0].point.x
                         positions[4] = intersects[0].point.y
                         positions[5] = intersects[0].point.z
@@ -316,25 +373,64 @@
                         const distance = v0.distanceTo(v1)
                         measurementLabels[lineId].element.innerText = distance.toFixed(2) + 'm'
                         measurementLabels[lineId].position.lerpVectors(v0, v1, 0.5)
-                     
-                        console.log("touchmove:", measurementLabels[lineId].element.innerText = distance.toFixed(2) + 'm')
-                        
+                      
+                      //  console.log("Touchmove:", measurementLabels[lineId].element.innerText = distance.toFixed(2) + 'm')
+                      
                     
                 }
                 }
 
 
             }
-           
+
+        //orbitcontrol helper
+           function onOrientationHelperChange( ev ) {
+
+                translateCamera( ev.direction );
+
+                }
+
+          function onOrientationHelperClick( ev ) {
+
+                // Simulate double-click (less than 250ms)
+                let nClick = Date.now();
+                if ( nClick - _lastCLick < 250 ) {
+
+                    translateCamera( ev.normal );
+
+                }
+
+                _lastCLick = nClick;
+
+            }
+
+                function translateCamera( direction ) {
+
+                controls.enabled = false;
+
+                const dist = camera.position.distanceTo( controls.target ),
+                    newCameraPos = controls.target.clone().add( direction.multiplyScalar( dist ) );
+
+                camera.position.set(newCameraPos.x, newCameraPos.y, newCameraPos.z);
+
+                controls.enabled = true;
+
+                }
+
 
             var animate = function () {
                 requestAnimationFrame(animate)
                 controls.update()
                 render()
             }
+            
             function render() {
+                
                 labelRenderer.render(scene, camera)
                 renderer.render(scene, camera)
+                camera.updateMatrixWorld()
+            
+                
             }
             animate()
             window.focus()
