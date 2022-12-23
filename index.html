@@ -219,8 +219,8 @@
                 
                 window.removeEventListener('touchstart', touchon,false)
                 window.removeEventListener('touchend',  touchoff,false)
-               // document.removeEventListener('touchmove', onDocumentTouchMove,false)    
-                //renderer.domElement.removeEventListener('pointerdown',onlyClick,false)
+               document.removeEventListener('touchmove', onDocumentTouchMove,false)    
+                renderer.domElement.removeEventListener('pointerdown',onlyClick,false)
             }
                 
             }
@@ -272,9 +272,9 @@
                      else {
                             clearTimeout(clickTimer);
                             clickTimer = null;
-                            
-                          //document.addEventListener('touchmove', onDocumentTouchMove,false)    
-                           // renderer.domElement.addEventListener('pointerdown',onlyClick,false)
+                             document.removeEventListener('touchmove', onDocumentTouchMove,false)    
+                             renderer.domElement.removeEventListener('pointerdown',onlyClick,false)
+                         
                             console.log("Double Touch")
 
                         }
