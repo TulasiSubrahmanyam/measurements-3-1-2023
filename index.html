@@ -203,10 +203,10 @@
                 controls.enableZoom = true;
                 controls.enablePan = true;
                 buttonClicks.style.backgroundColor="green"
-                window.removeEventListener('touchstart', touchon,false)
-                window.removeEventListener('touchend',  touchoff,false)
-               // document.addEventListener('touchmove', onDocumentTouchMove,false)    
-               // renderer.domElement.addEventListener('pointerdown',onlyClick,false)
+                window.addEventListener('touchstart', touchon,false)
+                window.addEventListener('touchend',  touchoff,false)
+                //document.addEventListener('touchmove', onDocumentTouchMove,false)    
+                //renderer.domElement.addEventListener('pointerdown',onlyClick,false)
                 //document.addEventListener('mousemove', onDocumentMouseMove, false)
                 
             }else if(buttonClicks.value==="on"){
@@ -216,9 +216,9 @@
                 buttonClicks.style.backgroundColor="red"
                 scene.remove(line)
                 scene.remove(measurementLabels[lineId])
-                window.addEventListener('touchstart', touchon,false)
-                window.addEventListener('touchend',  touchoff,false)
-               
+                
+                window.removeEventListener('touchstart', touchon,false)
+                window.removeEventListener('touchend',  touchoff,false)
                // document.removeEventListener('touchmove', onDocumentTouchMove,false)    
                 //renderer.domElement.removeEventListener('pointerdown',onlyClick,false)
             }
@@ -255,11 +255,11 @@
                     if (clickTimer == null) {
                             clickTimer = setTimeout(function () {
                                 clickTimer = null;
-
+                                document.addEventListener('touchmove', onDocumentTouchMove,false)    
+                                renderer.domElement.addEventListener('pointerdown',onlyClick,false)
                             }, 300)
                             ctrlDown=true;
-                            document.addEventListener('touchmove', onDocumentTouchMove,false)    
-                            renderer.domElement.addEventListener('pointerdown',onlyClick,false)
+                           
                             controls.enableRotate=false;
                             controls.enableZoom = true;
                             controls.enablePan = true;
