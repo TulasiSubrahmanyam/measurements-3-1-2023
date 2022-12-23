@@ -205,8 +205,8 @@
                 buttonClicks.style.backgroundColor="green"
                 window.addEventListener('touchstart', touchon,false)
                 window.addEventListener('touchend',  touchoff,false)
-                //document.addEventListener('touchmove', onDocumentTouchMove,false)    
-                //renderer.domElement.addEventListener('pointerdown',onlyClick,false)
+                document.addEventListener('touchmove', onDocumentTouchMove,false)    
+                renderer.domElement.addEventListener('pointerdown',onlyClick,false)
                 //document.addEventListener('mousemove', onDocumentMouseMove, false)
                 
             }else if(buttonClicks.value==="on"){
@@ -256,7 +256,7 @@
                             clickTimer = setTimeout(function () {
                                 clickTimer = null;
                                 document.removeEventListener('touchmove', onDocumentTouchMove,false)    
-                            renderer.domElement.removeEventListener('pointerdown',onlyClick,false)
+                                 renderer.domElement.removeEventListener('pointerdown',onlyClick,false)
                             }, 300)
                             ctrlDown=true;
                            
@@ -273,8 +273,8 @@
                             clearTimeout(clickTimer);
                             clickTimer = null;
                             
-                            document.addEventListener('touchmove', onDocumentTouchMove,false)    
-                            renderer.domElement.addEventListener('pointerdown',onlyClick,false)
+                          //  document.addEventListener('touchmove', onDocumentTouchMove,false)    
+                           // renderer.domElement.addEventListener('pointerdown',onlyClick,false)
                             console.log("Double Touch")
 
                         }
