@@ -199,7 +199,7 @@
                 if(buttonClicks.value==="off"){
                 console.log("Measurement Mode Active")
                 buttonClicks.value="on"
-                controls.enabled=true
+                controls.enableRotate=false;
                 controls.enableZoom = true;
                 controls.enablePan = true;
                 buttonClicks.style.backgroundColor="green"
@@ -236,8 +236,9 @@
              console.log(e.touches.length) 
              console.log(" Touch Start Screen Co-ordinates",touchs)
                 if(e.type==="touchstart"){
-                   ctrlDown=true
-                   controls.enabled=false
+                   ctrlDown=true;
+                   
+                   contorls.enableRotate=false;
                    controls.enableZoom = true;
                    controls.enablePan = true;
                    renderer.domElement.style.cursor = 'crosshair' 
@@ -255,8 +256,6 @@
                      ctrlDown = false
                      //controls.enabled=true
                    // controls.enableZoom=true
-                  
-                    
                     
                     renderer.domElement.style.cursor = 'pointer'
                     if (drawingLine) {
@@ -264,7 +263,7 @@
                         // scene.remove(line)
                          //scene.remove(measurementLabels[lineId])
                          drawingLine = false
-                         controls.enabled=true
+                         controls.enableRotate=false
                          event.preventDefault()
                         // let P = intersects[0].point
                         if(intersects.length>0){
