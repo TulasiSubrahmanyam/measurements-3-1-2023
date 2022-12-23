@@ -255,8 +255,8 @@
                     if (clickTimer == null) {
                             clickTimer = setTimeout(function () {
                                 clickTimer = null;
-                                document.removeEventListener('touchmove', onDocumentTouchMove,false)    
-                                 renderer.domElement.removeEventListener('pointerdown',onlyClick,false)
+                               // document.removeEventListener('touchmove', onDocumentTouchMove,false)    
+                                 //renderer.domElement.removeEventListener('pointerdown',onlyClick,false)
                             }, 300)
                             ctrlDown=true;
                            
@@ -273,7 +273,7 @@
                             clearTimeout(clickTimer);
                             clickTimer = null;
                             
-                          //  document.addEventListener('touchmove', onDocumentTouchMove,false)    
+                          //document.addEventListener('touchmove', onDocumentTouchMove,false)    
                            // renderer.domElement.addEventListener('pointerdown',onlyClick,false)
                             console.log("Double Touch")
 
