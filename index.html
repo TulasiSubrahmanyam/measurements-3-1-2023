@@ -255,11 +255,11 @@
                     if (clickTimer == null) {
                             clickTimer = setTimeout(function () {
                                 clickTimer = null;
-                               
+                                document.removeEventListener('touchmove', onDocumentTouchMove,false)    
+                            renderer.domElement.removeEventListener('pointerdown',onlyClick,false)
                             }, 300)
                             ctrlDown=true;
-                            document.removeEventListener('touchmove', onDocumentTouchMove,false)    
-                            renderer.domElement.removeEventListener('pointerdown',onlyClick,false)
+                           
                             controls.enableRotate=false;
                             controls.enableZoom = true;
                             controls.enablePan = true;
