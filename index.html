@@ -253,8 +253,11 @@
                 console.log("Touch End Screen Co-ordinates",touchs)
             
                      ctrlDown = false
-                     controls.enabled=true
+                     //controls.enabled=true
                    // controls.enableZoom=true
+                  
+                    
+                    
                     renderer.domElement.style.cursor = 'pointer'
                     if (drawingLine) {
                         //delete the last line because it wasn't committed
@@ -264,13 +267,17 @@
                          controls.enabled=true
                          event.preventDefault()
                         // let P = intersects[0].point
-                        
+                        if(intersects.length>0){
+                        raycaster.setFromCamera(touchs, camera)
+                        intersects = raycaster.intersectObjects(pickableObjects, false)
+                        console.log("TouchOff World Co-ordinates:",intersects[0].point)
+                        }
                         console.log("Completed Drawing Line")
                    }
                 
             }
 
-      
+     
 
            
            function onlyClick(event) {
@@ -283,8 +290,8 @@
                     //console.log("raycaster")
                     intersects = raycaster.intersectObjects(pickableObjects, false)
                     if (intersects.length > 0) {
-                           
-
+                     
+                      
                         if (!drawingLine) {
                             //start the line
                             console.log("!Drawline")
@@ -317,6 +324,9 @@
                            scene.add(measurementLabels[lineId])
                           // let P = intersects[0].point
                             console.log("Touch Start World Co-ordinates",intersects[0].point)
+                           
+
+                            //console.log("Intersect Length",intersects.length)
                             drawingLine = true
                            // console.log("raycaster-1") 
                         } else {
@@ -329,7 +339,7 @@
                             lineId++
                             drawingLine = false
                             //console.log("raycaster-2") 
-                            console.log("Touch Start World Co-ordinates",intersects[0].point)
+                            
                         }
                     }
                 }
@@ -366,7 +376,6 @@
                         measurementLabels[lineId].position.lerpVectors(v0, v1, 0.5)
                       
                       //  console.log("Touchmove:", measurementLabels[lineId].element.innerText = distance.toFixed(2) + 'm')
-                      
                     
                 }
                 }
