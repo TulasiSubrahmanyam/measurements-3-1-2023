@@ -205,8 +205,8 @@
                 buttonClicks.style.backgroundColor="green"
                 window.addEventListener('touchstart', touchon,false)
                 window.addEventListener('touchend',  touchoff,false)
-                document.addEventListener('touchmove', onDocumentTouchMove,false)    
-                renderer.domElement.addEventListener('pointerdown',onlyClick,false)
+               // document.addEventListener('touchmove', onDocumentTouchMove,false)    
+               // renderer.domElement.addEventListener('pointerdown',onlyClick,false)
                 //document.addEventListener('mousemove', onDocumentMouseMove, false)
                 
             }else if(buttonClicks.value==="on"){
@@ -219,33 +219,66 @@
                 
                 window.removeEventListener('touchstart', touchon,false)
                 window.removeEventListener('touchend',  touchoff,false)
-               document.removeEventListener('touchmove', onDocumentTouchMove,false)    
-                renderer.domElement.removeEventListener('pointerdown',onlyClick,false)
+               // document.removeEventListener('touchmove', onDocumentTouchMove,false)    
+                //renderer.domElement.removeEventListener('pointerdown',onlyClick,false)
             }
                 
             }
 
-         
+         /*   var mylatesttap;
+                function doubletap() {
 
+                var now = new Date().getTime();
+                var timesince = now - mylatesttap;
+                if((timesince < 600) && (timesince > 0)){
+
+                    // double tap  
+                     console.log("double tap")
+
+                }else{
+                            // too much time to be a doubletap
+                        }
+
+                mylatesttap = new Date().getTime();
+
+                }*/
+            var clickTimer=null
             function touchon(e) {
                 
               //console.log("local co-ordinate",renderer.domElement.getBoundingClientRect())
               //  console.log("TouchPlaced :",'x: ' + event.touches[0].clientX + ', y: ' + event.touches[0].clientY)
               // console.log("container co-ordinates :",geometry.domElement.getBoundingClientRect())
 
-             console.log(e.touches.length) 
-             console.log(" Touch Start Screen Co-ordinates",touchs)
+             console.log("Touch Start") 
+            
                 if(e.type==="touchstart"){
-                   ctrlDown=true;
-                   
-                   contorls.enableRotate=false;
-                   controls.enableZoom = true;
-                   controls.enablePan = true;
-                   renderer.domElement.style.cursor = 'crosshair' 
-                  // console.log(e.touches.length)
+                    if (clickTimer == null) {
+                            clickTimer = setTimeout(function () {
+                                clickTimer = null;
+
+                            }, 300)
+                            ctrlDown=true;
+                            document.addEventListener('touchmove', onDocumentTouchMove,false)    
+                            renderer.domElement.addEventListener('pointerdown',onlyClick,false)
+                            controls.enableRotate=false;
+                            controls.enableZoom = true;
+                            controls.enablePan = true;
+                            renderer.domElement.style.cursor = 'crosshair' 
+                            console.log("Single Touch")
+                            console.log(" Touch Start Screen Co-ordinates",touchs)
+                            // console.log(e.touches.length)
+                        } 
                   
+                     else {
+                            clearTimeout(clickTimer);
+                            clickTimer = null;
+                            document.removeEventListener('touchmove', onDocumentTouchMove,false)    
+                            renderer.domElement.removeEventListener('pointerdown',onlyClick,false)
+                          console.log("Double Touch")
+
+                        }
                  }
-                    
+                 
           
             }
            
