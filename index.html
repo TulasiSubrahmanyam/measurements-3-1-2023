@@ -199,7 +199,9 @@
                 if(buttonClicks.value==="off"){
                 console.log("Measurement Mode Active")
                 buttonClicks.value="on"
-                controls.enabled=false
+                controls.enabled=true
+                controls.enableZoom = true;
+                controls.enablePan = true;
                 buttonClicks.style.backgroundColor="green"
                 window.addEventListener('touchstart', touchon,false)
                 window.addEventListener('touchend',  touchoff,false)
@@ -223,52 +225,37 @@
                 
             }
 
-            function deteremineScreenCoordinate(object) {
-                    var vector = new THREE.Vector3();
-                    vector.setFromMatrixPosition(object.matrixWorld);
-                    vector.project(camera);
-
-                    var width = window.innerWidth, height = window.innerHeight;
-                    var widthHalf = width / 2, heightHalf = height / 2;
-
-                    vector.x = ( vector.x * widthHalf ) + widthHalf;
-                    vector.y = -( vector.y * heightHalf ) + heightHalf;
-
-                    return vector;
-                    console.log(vector)
-                }
+         
 
             function touchon(e) {
                 
               //console.log("local co-ordinate",renderer.domElement.getBoundingClientRect())
-             
               //  console.log("TouchPlaced :",'x: ' + event.touches[0].clientX + ', y: ' + event.touches[0].clientY)
-              
               // console.log("container co-ordinates :",geometry.domElement.getBoundingClientRect())
+
+             console.log(e.touches.length) 
              console.log(" Touch Start Screen Co-ordinates",touchs)
                 if(e.type==="touchstart"){
-                    
                    ctrlDown=true
                    controls.enabled=false
+                   controls.enableZoom = true;
+                   controls.enablePan = true;
                    renderer.domElement.style.cursor = 'crosshair' 
                   // console.log(e.touches.length)
                   
                  }
-               
+                    
           
             }
            
 
               function touchoff(event) {
                 console.log("Touch End Screen Co-ordinates",touchs)
-                let P = intersects[0].point
-                console.log("Touch End world Co-ordinates",P)
             
-                    ctrlDown = false
+                     ctrlDown = false
                      controls.enabled=true
                    // controls.enableZoom=true
                     renderer.domElement.style.cursor = 'pointer'
-                    
                     if (drawingLine) {
                         //delete the last line because it wasn't committed
                         // scene.remove(line)
@@ -276,12 +263,14 @@
                          drawingLine = false
                          controls.enabled=true
                          event.preventDefault()
+                        // let P = intersects[0].point
+                        
                         console.log("Completed Drawing Line")
                    }
                 
             }
 
-     
+      
 
            
            function onlyClick(event) {
@@ -294,6 +283,8 @@
                     //console.log("raycaster")
                     intersects = raycaster.intersectObjects(pickableObjects, false)
                     if (intersects.length > 0) {
+                           
+
                         if (!drawingLine) {
                             //start the line
                             console.log("!Drawline")
@@ -324,8 +315,8 @@
                             measurementLabel.position.copy(intersects[0].point)
                             measurementLabels[lineId] = measurementLabel
                            scene.add(measurementLabels[lineId])
-                           let P = intersects[0].point
-                           console.log("Touch Start World Co-ordinates",P)
+                          // let P = intersects[0].point
+                            console.log("Touch Start World Co-ordinates",intersects[0].point)
                             drawingLine = true
                            // console.log("raycaster-1") 
                         } else {
@@ -338,7 +329,7 @@
                             lineId++
                             drawingLine = false
                             //console.log("raycaster-2") 
-                            
+                            console.log("Touch Start World Co-ordinates",intersects[0].point)
                         }
                     }
                 }
@@ -346,17 +337,17 @@
      
             function onDocumentTouchMove(e) {
               //  console.log("Touch Move")
-                event.preventDefault()  
+                //event.preventDefault()  
         
                 touchs.x= (event.targetTouches[0].clientX / renderer.domElement.clientWidth) * 2 - 1;
                 touchs.y= -(event.targetTouches[0].clientY / renderer.domElement.clientHeight) * 2 + 1;
-                if (event.targetTouches.length === 2) {
+               /* if (event.targetTouches.length === 2) {
                 let hypo1 = Math.hypot((event.targetTouches[0].pageX - event.targetTouches[1].pageX),
                                           (event.targetTouches[0].pageY - event.targetTouches[1].pageY));
                   if (hypo === undefined) {
-                hypo = hypo1;
+                   hypo = hypo1;
                    }
-                  }
+                  }*/
               
                 if (drawingLine) {
                     raycaster.setFromCamera(touchs, camera)
@@ -404,7 +395,7 @@
 
             }
 
-                function translateCamera( direction ) {
+            function translateCamera( direction ) {
 
                 controls.enabled = false;
 
