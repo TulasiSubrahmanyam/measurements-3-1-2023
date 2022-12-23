@@ -242,7 +242,7 @@
                 mylatesttap = new Date().getTime();
 
                 }*/
-            var clickTimer=null
+            //var clickTimer=null
             function touchon(e) {
                 
               //console.log("local co-ordinate",renderer.domElement.getBoundingClientRect())
@@ -252,24 +252,25 @@
              console.log("Touch Start") 
             
                 if(e.type==="touchstart"){
-                    if (clickTimer == null) {
+                  /*  if (clickTimer == null) {
                             clickTimer = setTimeout(function () {
                                 clickTimer = null;
                                // document.removeEventListener('touchmove', onDocumentTouchMove,false)    
                                  //renderer.domElement.removeEventListener('pointerdown',onlyClick,false)
-                            }, 300)
+                            }, 300)*/
                             ctrlDown=true;
                            
                             controls.enableRotate=false;
                             controls.enableZoom = true;
                             controls.enablePan = true;
                             renderer.domElement.style.cursor = 'crosshair' 
-                            console.log("Single Touch")
+                            //console.log("Single Touch")
                             console.log(" Touch Start Screen Co-ordinates",touchs)
                             // console.log(e.touches.length)
                         } 
+                    }
                   
-                     else {
+                  /*   else {
                             clearTimeout(clickTimer);
                             clickTimer = null;
                             // document.removeEventListener('touchmove', onDocumentTouchMove,false)    
@@ -277,11 +278,11 @@
                          
                             console.log("Double Touch")
 
-                        }
-                 }
+                        }*/
+                 
                  
           
-            }
+            
            
 
               function touchoff(event) {
