@@ -10,7 +10,7 @@
             #instructions {
                 color: white;
                 position: absolute;
-              padding: 20px;
+                padding: 20px;
                 top: 10px;
                 font-family: monospace;
                 width: 100%;
@@ -20,8 +20,14 @@
 
             .measurementLabel {
                 font-family: monospace;
-                background-color: black;
-                color: white;
+                background-color: rgb(36, 35, 35);
+                color: rgb(255, 255, 255);
+             
+                font-size:12px;
+                font-weight: 500;
+                padding: 2px;
+                font-family: "Roboto";
+                border-radius: 2px;
             }
             #button-click{
                 color:white;
@@ -91,7 +97,7 @@
             camera.position.x = 15
             camera.position.y = 15
             camera.position.z = 15
-            camera.lookAt( 0, 0, 0 );
+           
 
             const renderer = new THREE.WebGLRenderer()
             renderer.physicallyCorrectLights = true;
@@ -182,7 +188,7 @@
             const raycaster = new THREE.Raycaster()
             let intersects
             const touchs= new THREE.Vector2()
-            
+         
         
             let ctrlDown = false
             let lineId = 0
@@ -225,7 +231,7 @@
                 
             }
 
-         /*   var mylatesttap;
+         /*  var mylatesttap;
                 function doubletap() {
 
                 var now = new Date().getTime();
@@ -248,9 +254,11 @@
               //console.log("local co-ordinate",renderer.domElement.getBoundingClientRect())
               //  console.log("TouchPlaced :",'x: ' + event.touches[0].clientX + ', y: ' + event.touches[0].clientY)
               // console.log("container co-ordinates :",geometry.domElement.getBoundingClientRect())
-
-             console.log("Touch Start") 
+       
             
+            // console.log(document.body.appendChild(renderer.domElement));
+             console.log("Touch Start") 
+          
                 if(e.type==="touchstart"){
                   /*  if (clickTimer == null) {
                             clickTimer = setTimeout(function () {
@@ -264,9 +272,15 @@
                             controls.enableZoom = true;
                             controls.enablePan = true;
                             renderer.domElement.style.cursor = 'crosshair' 
+                            
                             //console.log("Single Touch")
+                           // var ndcX = (event.touches[0].screenX / window.innerWidth) * 2 - 1;
+                            //var ndcY = -(event.touches[0].screenY / window.innerHeight) * 2 + 1;
+                            //console.log("new cor",ndcX,ndcY)
                             console.log(" Touch Start Screen Co-ordinates",touchs)
                             // console.log(e.touches.length)
+                           
+                            
                         } 
                     }
                   
@@ -286,7 +300,7 @@
            
 
               function touchoff(event) {
-                console.log("Touch End Screen Co-ordinates",touchs)
+              //  console.log("Touch End Screen Co-ordinates",touchs)
             
                      ctrlDown = false
                      //controls.enabled=true
@@ -304,7 +318,7 @@
                         if(intersects.length>0){
                         raycaster.setFromCamera(touchs, camera)
                         intersects = raycaster.intersectObjects(pickableObjects, false)
-                        console.log("TouchOff World Co-ordinates:",intersects[0].point)
+                       // console.log("TouchOff World Co-ordinates:",intersects[0].point)
                         }
                         console.log("Completed Drawing Line")
                    }
@@ -318,7 +332,7 @@
            
                     touchs.x= (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
                     touchs.y= -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
-                    
+                   
                 if (!ctrlDown) {
                     raycaster.setFromCamera(touchs, camera)
                     //console.log("raycaster")
@@ -338,8 +352,8 @@
                                 new THREE.LineBasicMaterial({
                                     color: 0xff0000,
                                     transparent: true,
-                                    opacity: 1,
-                                    lineWidth : 4,
+                                   // opacity: 1,
+                                    lineWidth:2,
                                    // depthTest: false,
                                     // depthWrite: true
                                    
@@ -359,7 +373,6 @@
                           // let P = intersects[0].point
                             console.log("Touch Start World Co-ordinates",intersects[0].point)
                            
-
                             //console.log("Intersect Length",intersects.length)
                             drawingLine = true
                            // console.log("raycaster-1") 
@@ -373,6 +386,7 @@
                             lineId++
                             drawingLine = false
                             //console.log("raycaster-2") 
+                         
                             
                         }
                     }
