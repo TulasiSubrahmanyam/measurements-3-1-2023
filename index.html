@@ -267,15 +267,40 @@
                             controls.enableZoom = true;
                             controls.enablePan = true;
                             renderer.domElement.style.cursor = 'crosshair' 
-                            
+                            let rect= renderer.domElement.getBoundingClientRect();
+                            let x9 = event.touches[0].clientX - rect.left;
+                            let y9 = event.touches[0].clientY - rect.top;
+                            console.log("Canvas Full Coordinates",rect.top, rect.left, rect.width, rect.height);
+                            console.log("Canvas Screen Coordinations"," x: " + x9, " y: " + y9);
                             //console.log("Single Touch")
                            // var ndcX = (event.touches[0].screenX / window.innerWidth) * 2 - 1;
                             //var ndcY = -(event.touches[0].screenY / window.innerHeight) * 2 + 1;
                             //console.log("new cor",ndcX,ndcY)
-                            console.log(" Touch Start Screen Co-ordinates",touchs)
+                            //console.log(" Touch Start Screen Co-ordinates",touchs)
                             // console.log(e.touches.length)
-                           
-                            
+                           // raycaster.setFromCamera(touchs, camera)
+                            //console.log("raycaster")
+                           //intersects = raycaster.intersectObjects(pickableObjects, false)
+                            //console.log(intersects)
+
+                            // Cast the ray and get the intersects array
+                            /*raycaster.setFromCamera(touchs, camera);
+                            intersects = raycaster.intersectObjects(pickableObjects,false);
+
+                            // Get the first intersection point
+                            const intersection = intersects[0];
+
+                            // Get the UV coordinates of the intersection point
+                            const uv = intersection.uv;
+
+                            // Get the minimum and maximum UV coordinates
+                            const minU = Math.min(0,uv.x);
+                            const maxU = Math.max(uv.x);
+                            const minV = Math.min(0,uv.y);
+                            const maxV = Math.max(uv.y);
+                            console.log("Min X",minU,"Min Y",minV)
+                            console.log("Max X",maxU,"Max Y",maxV)*/
+
                         } 
                     }
                   
@@ -310,9 +335,9 @@
                          event.preventDefault()
                         // let P = intersects[0].point
                         if(intersects.length>0){
-                        raycaster.setFromCamera(touchs, camera)
-                        intersects = raycaster.intersectObjects(pickableObjects, false)
-                       // console.log("TouchOff World Co-ordinates:",intersects[0].point)
+                          raycaster.setFromCamera(touchs, camera)
+                          intersects = raycaster.intersectObjects(pickableObjects, false)
+                          console.log("TouchOff World Co-ordinates:",intersects[0].point)
                         }
                         console.log("Completed Drawing Line")
                    }
@@ -326,7 +351,7 @@
            
                     touchs.x= (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
                     touchs.y= -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
-                   
+                        
                 if (!ctrlDown) {
                     raycaster.setFromCamera(touchs, camera)
                     //console.log("raycaster")
@@ -346,10 +371,12 @@
                                 new THREE.LineBasicMaterial({
                                     color: 0xff0000,
                                    // transparent: true,
-                                     opacity: 1,
-                                   lineWidth:5,
+                                     //opacity: 1,
+                                     linewidth: 20,
                                    // depthTest: false,
-                                    // depthWrite: true
+                                      depthWrite: true,
+                                      dashed: false,
+					                //alphaToCoverage: true,
                                    
                                 })
                             
@@ -365,8 +392,19 @@
                             measurementLabels[lineId] = measurementLabel
                            scene.add(measurementLabels[lineId])
                           // let P = intersects[0].point
-                            console.log("Touch Start World Co-ordinates",intersects[0].point)
-                           
+                           // console.log("Touch Start World Co-ordinates",intersects[0].point)
+                        let rect= renderer.domElement.getBoundingClientRect();
+                        let x9 = event.clientX - rect.left;
+                        let y9 = event.clientY - rect.top;
+                        //console.log(rect.top, rect.left, rect.width, rect.height);
+                        //console.log(" x: " + x9, " y: " + y9);
+                        // Get the first intersection point
+                        const intersection = intersects[0];
+
+                        // Get the UV coordinates of the intersection point
+                        const uv = intersection.uv;
+                        console.log("Intersect UV Screen Coordinates",uv.x,uv.y)
+
                             //console.log("Intersect Length",intersects.length)
                             drawingLine = true
                            // console.log("raycaster-1") 
