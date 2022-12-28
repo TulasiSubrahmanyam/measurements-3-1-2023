@@ -23,7 +23,7 @@
                 background-color: rgb(36, 35, 35);
                 color: rgb(255, 255, 255);
              
-                font-size:12px;
+                font-size:20px;
                 font-weight: 500;
                 padding: 2px;
                 font-family: "Roboto";
@@ -233,20 +233,15 @@
 
          /*  var mylatesttap;
                 function doubletap() {
-
                 var now = new Date().getTime();
                 var timesince = now - mylatesttap;
                 if((timesince < 600) && (timesince > 0)){
-
                     // double tap  
                      console.log("double tap")
-
                 }else{
                             // too much time to be a doubletap
                         }
-
                 mylatesttap = new Date().getTime();
-
                 }*/
             //var clickTimer=null
             function touchon(e) {
@@ -291,7 +286,6 @@
                              //renderer.domElement.removeEventListener('pointerdown',onlyClick,false)
                          
                             console.log("Double Touch")
-
                         }*/
                  
                  
@@ -351,9 +345,9 @@
                                 geometry,
                                 new THREE.LineBasicMaterial({
                                     color: 0xff0000,
-                                    transparent: true,
-                                   // opacity: 1,
-                                    lineWidth:2,
+                                   // transparent: true,
+                                     opacity: 1,
+                                   lineWidth:5,
                                    // depthTest: false,
                                     // depthWrite: true
                                    
