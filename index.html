@@ -5,6 +5,7 @@
             body {
                 overflow: hidden;
                 margin: 0px;
+                font-family: "droid sans";
             }
 
             #instructions {
@@ -19,7 +20,7 @@
             }
 
             .measurementLabel {
-                font-family: monospace;
+                
                 background-color: rgb(36, 35, 35);
                 color: rgb(255, 255, 255);
              
@@ -82,10 +83,10 @@
             import { CSS2DRenderer, CSS2DObject } from './CSS2DRenderer.js';
             import { OrientationHelper } from './OrientationHelper.js';
            // import { TransformControls } from './TransformControls.js';
-            import { GUI } from './lil-gui.module.min.js';
-            import { Line2 } from './Line2.js';
-			import { LineMaterial } from './LineMaterial.js';
-			import { LineGeometry } from './LineGeometry.js';
+            //import { GUI } from './lil-gui.module.min.js';
+           // import { Line2 } from './Line2.js';
+			//import { LineMaterial } from './LineMaterial.js';
+			//import { LineGeometry } from './LineGeometry.js';
 			//import * as GeometryUtils from './GeometryUtils.js';
 
 
@@ -374,19 +375,22 @@
                             line = new THREE.LineSegments(
                                 geometry,
                                 new THREE.LineBasicMaterial({
-                                    color: 0xff0000,
+                                    color:0xff0000,
                                    // transparent: true,
                                      //opacity: 1,
                                      linewidth:3,
                                    // depthTest: false,
                                      // depthWrite: true,
                                       dashed: false,
-					                alphaToCoverage: true,
+					                 alphaToCoverage: true,
+                                     resolution: new THREE.Vector2(window.innerWidth,window.innerHeight ) 
                                    
                                 })
                             
                             )
-                    
+
+                           // let line1 =new THREE.LineMaterial({color:0xff0000,linewidth:3,dashed:false,alphaToCoverage:true})
+                            //line=new THREE.LineSegments(geometry,line1)
                             event.preventDefault()
                             line.frustumCulled = false
                             scene.add(line)
