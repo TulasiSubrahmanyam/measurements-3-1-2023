@@ -82,7 +82,12 @@
             import { CSS2DRenderer, CSS2DObject } from './CSS2DRenderer.js';
             import { OrientationHelper } from './OrientationHelper.js';
            // import { TransformControls } from './TransformControls.js';
-          
+            import { GUI } from './lil-gui.module.min.js';
+            import { Line2 } from './Line2.js';
+			import { LineMaterial } from './LineMaterial.js';
+			import { LineGeometry } from './LineGeometry.js';
+			//import * as GeometryUtils from './GeometryUtils.js';
+
 
             const scene = new THREE.Scene()
 
@@ -375,12 +380,13 @@
                                      linewidth:3,
                                    // depthTest: false,
                                      // depthWrite: true,
-                                     // dashed: false,
-					                //alphaToCoverage: true,
+                                      dashed: false,
+					                alphaToCoverage: true,
                                    
                                 })
                             
                             )
+                    
                             event.preventDefault()
                             line.frustumCulled = false
                             scene.add(line)
@@ -400,11 +406,11 @@
                         //console.log(" x: " + x9, " y: " + y9);
                         // Get the first intersection point
                         const intersection = intersects[0];
-
+                 
                         // Get the UV coordinates of the intersection point
                         const uv = intersection.uv;
                         console.log("Intersect UV Screen Coordinates",uv.x,uv.y)
-
+                     
                             //console.log("Intersect Length",intersects.length)
                             drawingLine = true
                            // console.log("raycaster-1") 
@@ -454,7 +460,7 @@
                         const distance = v0.distanceTo(v1)
                         measurementLabels[lineId].element.innerText = distance.toFixed(2) + 'm'
                         measurementLabels[lineId].position.lerpVectors(v0, v1, 0.5)
-                      
+                       
                       //  console.log("Touchmove:", measurementLabels[lineId].element.innerText = distance.toFixed(2) + 'm')
                     
                 }
