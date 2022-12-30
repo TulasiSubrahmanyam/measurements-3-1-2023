@@ -384,7 +384,7 @@
                                    // geometry1.setPositions( positions );
                                    // geometry1.setColors( colors );
                             let  matLine= new THREE.LineBasicMaterial({
-                                    color:0xff0000,
+                                    color:"#ff0000",
                                    // transparent: true,
                                      //opacity: 1,
                                      linewidth:3,
@@ -429,7 +429,8 @@ const gui = new GUI();
  gui.addColor(params, 'color').name('Color').onChange(function(val){
     // matLine.color=val;
     
-     matLine.color = new THREE.Color(val);
+    matLine.color = new THREE.Color(val);
+
      matLine.needsUpdate = true;
      console.log("matLine.Color",matLine.color)
      console.log(matLine.needsUpdate)
