@@ -82,7 +82,17 @@
             import { RGBELoader } from './RGBELoader.js';
             import { CSS2DRenderer, CSS2DObject } from './CSS2DRenderer.js';
             import { OrientationHelper } from './OrientationHelper.js';
-           // import { TransformControls } from './TransformControls.js';
+          
+            import Stats from './stats.module.js';//node_modules\three\examples\jsm\libs\stats.module.js
+			import { GPUStatsPanel } from './GPUStatsPanel.js';
+
+            import { GUI } from './lil-gui.module.min.js';
+            import { Line2 } from './Line2.js';
+			import { LineMaterial } from './LineMaterial.js';
+			import { LineGeometry } from './LineGeometry.js';
+			import * as GeometryUtils from './GeometryUtils.js';
+
+            // import { TransformControls } from './TransformControls.js';
             //import { GUI } from './lil-gui.module.min.js';
            // import { Line2 } from './Line2.js';
 			//import { LineMaterial } from './LineMaterial.js';
@@ -119,7 +129,13 @@
             labelRenderer.domElement.style.top = '0px'
             labelRenderer.domElement.style.pointerEvents = 'none'
             document.body.appendChild(labelRenderer.domElement)
+            
+            const  stats = new Stats();
+			document.body.appendChild( stats.dom );
 
+           const gpuPanel = new GPUStatsPanel( renderer.getContext() );
+				stats.addPanel( gpuPanel );
+				stats.showPanel( 0 );
 
            const controls = new OrbitControls(camera, renderer.domElement)
            controls.enabled=true
@@ -149,9 +165,11 @@
                         }
                     })
                     scene.add(gltf.scene)
+                    
                 },
                 (xhr) => {
                     console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+                    
                 },
                 (error) => {
                     console.log(error)
@@ -165,6 +183,7 @@
                 renderer.setSize(window.innerWidth, window.innerHeight)
                 labelRenderer.setSize(window.innerWidth, window.innerHeight)
                 render()
+              
             }
               
            const axesHelper = new THREE.AxesHelper(0.5);
@@ -306,23 +325,12 @@
                             const maxV = Math.max(uv.y);
                             console.log("Min X",minU,"Min Y",minV)
                             console.log("Max X",maxU,"Max Y",maxV)*/
-
+                        
                         } 
                     }
                   
-                  /*   else {
-                            clearTimeout(clickTimer);
-                            clickTimer = null;
-                            // document.removeEventListener('touchmove', onDocumentTouchMove,false)    
-                             //renderer.domElement.removeEventListener('pointerdown',onlyClick,false)
-                         
-                            console.log("Double Touch")
-                        }*/
-                 
-                 
-          
-            
-           
+               
+       
 
               function touchoff(event) {
               //  console.log("Touch End Screen Co-ordinates",touchs)
@@ -372,28 +380,88 @@
                             points.push(intersects[0].point)
                             points.push(intersects[0].point.clone())
                             const geometry = new THREE.BufferGeometry().setFromPoints(points)
-                            line = new THREE.LineSegments(
-                                geometry,
-                                new THREE.LineBasicMaterial({
+                            const geometry1 = new LineGeometry();
+                                   // geometry1.setPositions( positions );
+                                   // geometry1.setColors( colors );
+                            let  matLine= new THREE.LineBasicMaterial({
                                     color:0xff0000,
                                    // transparent: true,
                                      //opacity: 1,
                                      linewidth:3,
+                                     vertexColors: true,
                                    // depthTest: false,
                                      // depthWrite: true,
                                       dashed: false,
-					                 alphaToCoverage: true,
-                                     resolution: new THREE.Vector2(window.innerWidth,window.innerHeight ) 
-                                   
+					                  alphaToCoverage: true,
+                                     
+                                    
                                 })
-                            
-                            )
+                                line=new THREE.LineSegments(geometry, matLine )
+                   
 
                            // let line1 =new THREE.LineMaterial({color:0xff0000,linewidth:3,dashed:false,alphaToCoverage:true})
-                            //line=new THREE.LineSegments(geometry,line1)
+                            
                             event.preventDefault()
-                            line.frustumCulled = false
+                           // line.frustumCulled = false
                             scene.add(line)
+ //function initGui() {
+
+const gui = new GUI();
+
+// Define some parameters to control
+ const params = {
+ lineWidth: 3,
+ color: '#ff0000',
+ showGrid: false,
+ lightIntensity: 1.0
+ };
+
+ // Add a line width control .step(1).name('Line Width')
+ gui.add(params, 'lineWidth', 1, 10).onChange( function ( val ) {
+
+ matLine.linewidth = val;
+ matLine.needsUpdate = true;
+ console.log("MatLine.linewidth",matLine.linewidth)
+ console.log(matLine.needsUpdate)
+ } );
+
+ // Add a color picker control
+ gui.addColor(params, 'color').name('Color').onChange(function(val){
+    // matLine.color=val;
+    
+     matLine.color = new THREE.Color(val);
+     matLine.needsUpdate = true;
+     console.log("matLine.Color",matLine.color)
+     console.log(matLine.needsUpdate)
+ });
+
+ // Add a checkbox control
+// gui.add(params, 'showGrid').name('Show Grid');
+
+ // Add a range control
+// gui.add(params, 'lightIntensity', 0.0, 1.0).step(0.1).name('Light Intensity');
+
+ // You can also add folder to organize your controls
+ /*const lightingFolder = gui.addFolder('Lighting');
+ lightingFolder.add(params, 'lightIntensity', 0.0, 1.0).step(0.1).name('Intensity');
+ lightingFolder.addColor(params, 'lightColor').name('Color');
+ lightingFolder.open();*/
+
+ // Add event listeners to update your Three.js scene when the controls are changed
+/* gui.forEach(function(controller) {
+ controller.onChange(function(value) {
+     // Update your scene with the new value
+     updateScene(value);
+ });
+ });*/
+/* for (let controller of gui.controllers) {
+         controller.onChange(function(value) {
+             // Update your scene with the new value
+             updateScene(value);
+         });
+         }*/
+
+//}
                             const measurementDiv = document.createElement('div')
                             measurementDiv.className = 'measurementLabel'
                             measurementDiv.innerText = '0.0m'
@@ -418,6 +486,7 @@
                             //console.log("Intersect Length",intersects.length)
                             drawingLine = true
                            // console.log("raycaster-1") 
+                         
                         } else {
                             //finish the line
                             const positions = line.geometry.attributes.position.array
@@ -493,7 +562,11 @@
                 _lastCLick = nClick;
 
             }
+        //gui function 
+			
 
+
+			
             function translateCamera( direction ) {
 
                 controls.enabled = false;
@@ -512,6 +585,8 @@
                 requestAnimationFrame(animate)
                 controls.update()
                 render()
+              
+			
             }
             
             function render() {
@@ -519,7 +594,7 @@
                 labelRenderer.render(scene, camera)
                 renderer.render(scene, camera)
                 camera.updateMatrixWorld()
-            
+                
                 
             }
             animate()
