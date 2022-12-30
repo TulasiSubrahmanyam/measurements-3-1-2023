@@ -410,7 +410,8 @@
                     //function initGui() {
 
                     const gui = new GUI();
-
+                    gui.domElement.style.width = '300px';
+                    
                     // Define some parameters to control
                     const params = {
                     lineWidth: 3,
@@ -443,13 +444,15 @@
                         console.log(matLine.needsUpdate)
                     });
                         const measurementControls = {
-                        fontSize: 20,
+                        fontSize: "15px",
                         fontFamily: 'Arial',
                         color: '#ff0000',
-                        backgroundColor: '#ffffff'
-                        };
+                        backgroundColor: '#ffffff',
+                        padding:"3px",
 
-                        gui.add(measurementControls, 'fontSize', 10, 50).name('Font Size').onChange(function(val) {
+                        };
+                        const fontsize=['10px','12px','14px','18px','20px','24px','28px','30px','32px']
+                        gui.add(measurementControls, 'fontSize', fontsize).name('Font Size').onChange(function(val) {
                         measurementDiv.style.fontSize = val;
                          console.log("Measurement Font Size:", measurementDiv.style.fontSize)
                         
@@ -458,6 +461,7 @@
                         gui.add(measurementControls, 'fontFamily', fontFamilies).name('Font Family').onChange(function(val) {
                         measurementDiv.style.fontFamily = val;
                         console.log("Measurement Font Family:", measurementDiv.style.fontFamily)
+                     
                         });
 
                         gui.addColor(measurementControls, 'color').name('Font Color').onChange(function(val) {
