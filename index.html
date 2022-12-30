@@ -92,6 +92,8 @@
 			import { LineGeometry } from './LineGeometry.js';
 			import * as GeometryUtils from './GeometryUtils.js';
 
+            import { FontLoader } from './FontLoader.js';
+			import { TextGeometry } from './TextGeometry.js';
             // import { TransformControls } from './TransformControls.js';
             //import { GUI } from './lil-gui.module.min.js';
            // import { Line2 } from './Line2.js';
@@ -384,9 +386,9 @@
                                    // geometry1.setPositions( positions );
                                    // geometry1.setColors( colors );
                             let  matLine= new THREE.LineBasicMaterial({
-                                   //color:"#FF0000" ,
+                                     color:"#FF0000" ,
                                    // color:( Math.random() * 0xffffff ),
-                                   color: Math.floor(Math.random() * 16777216),
+                                  // color: Math.floor( 16777216),
                                     linewidth:3,
                                     // vertexColors: true,
                                    // transparent: true,
@@ -395,8 +397,7 @@
                                      // depthWrite: true,
                                      // dashed: false,
 					                 // alphaToCoverage: true,
-                                     
-                                    
+                            
                                 })
                                 line=new THREE.LineSegments(geometry, matLine )
                    
@@ -406,69 +407,153 @@
                             event.preventDefault()
                            // line.frustumCulled = false
                             scene.add(line)
- //function initGui() {
+                    //function initGui() {
 
-const gui = new GUI();
+                    const gui = new GUI();
 
-// Define some parameters to control
- const params = {
- lineWidth: 3,
- color: Math.floor(Math.random() * 16777216),
- showGrid: false,
- //lightIntensity: 1.0
- };
+                    // Define some parameters to control
+                    const params = {
+                    lineWidth: 3,
+                    color:"#FF0000" ,
+                    showGrid: false,
+                    //lightIntensity: 1.0
+                    };
 
- // Add a line width control .step(1).name('Line Width')
- gui.add(params, 'lineWidth', 1, 10).onChange( function ( val ) {
+                    const parmes={
+                        
+                    }
+                    // Add a line width control .step(1).name('Line Width')
+                    gui.add(params, 'lineWidth', 1, 10).onChange( function ( val ) {
 
- matLine.linewidth = val;
- matLine.needsUpdate = true;
- console.log("MatLine.linewidth",matLine.linewidth)
- console.log(matLine.needsUpdate)
- } );
+                    matLine.linewidth = val;
+                    matLine.needsUpdate = true;
+                    console.log("MatLine.linewidth",matLine.linewidth)
+                    console.log(matLine.needsUpdate)
+                    } );
 
- // Add a color picker control
- gui.addColor(params, 'color').name('Color').onChange(function(val){
-    // matLine.color=val;
-    
-   //  matLine.color =val;
-  // material.color = Math.floor(Math.random() * 16777216);
-  material.color=( Math.random() * 0xffffff );
-    // matLine.needsUpdate = true;
-     console.log("matLine.Color",matLine.color)
-     console.log(matLine.needsUpdate)
- });
+                    // Add a color picker control
+                    gui.addColor(params, 'color').name('Color').onChange(function(val){
+                        // matLine.color=val;
+                        
+                        matLine.color =new THREE.Color(val);
+                       // material.color = Math.floor(Math.random() * 16777216);
+                        //material.color=val;
+                        matLine.needsUpdate = true;
+                        console.log("matLine.Color",matLine.color)
+                        console.log(matLine.needsUpdate)
+                    });
 
- // Add a checkbox control
-// gui.add(params, 'showGrid').name('Show Grid');
+                   
+/*font changes
+let text = '0.0m'
 
- // Add a range control
-// gui.add(params, 'lightIntensity', 0.0, 1.0).step(0.1).name('Light Intensity');
+let	bevelEnabled = true
 
- // You can also add folder to organize your controls
- /*const lightingFolder = gui.addFolder('Lighting');
- lightingFolder.add(params, 'lightIntensity', 0.0, 1.0).step(0.1).name('Intensity');
- lightingFolder.addColor(params, 'lightColor').name('Color');
- lightingFolder.open();*/
+let font = undefined
 
- // Add event listeners to update your Three.js scene when the controls are changed
-/* gui.forEach(function(controller) {
- controller.onChange(function(value) {
-     // Update your scene with the new value
-     updateScene(value);
- });
- });*/
-/* for (let controller of gui.controllers) {
-         controller.onChange(function(value) {
-             // Update your scene with the new value
-             updateScene(value);
-         });
-         }*/
+let	fontName = 'optimer' // helvetiker, optimer, gentilis, droid sans, droid serif
+let	fontWeight = 'bold'; // normal bold
 
-//}
+const fontMap = {
+
+'helvetiker': 0,
+'optimer': 1,
+'gentilis': 2,
+'droid/droid_sans': 3,
+'droid/droid_serif': 4
+
+};
+const weightMap = {
+
+'regular': 0,
+'bold': 1
+
+};
+
+ const paramses = {
+					changeColor: function () {
+
+						pointLight.color.setHSL( Math.random(), 1, 0.5 );
+                        console.log(pointLight.color.setHSL( Math.random(), 1, 0.5 ))
+					},
+					changeFont: function () {
+
+						fontIndex ++;
+
+						fontName = reverseFontMap[ fontIndex % reverseFontMap.length ];
+						console.log("fontName",fontName)
+						loadFont();
+                        
+					},
+					changeWeight: function () {
+
+						if ( fontWeight === 'bold' ) {
+
+							fontWeight = 'regular';
+                           console.log("fontWeight",fontWeight)
+						} else {
+
+							fontWeight = 'bold';
+
+						}
+
+						loadFont();
+
+					},
+					changeBevel: function () {
+
+						bevelEnabled = ! bevelEnabled;
+						console.log("BevelEnabled",bevelEnabled)
+						refreshText();
+
+					}
+				};
+
+				//
+
+			
+
+				gui.add( paramses, 'changeColor' ).name( 'change color' );
+				gui.add( paramses, 'changeFont' ).name( 'change font' );
+				gui.add( paramses, 'changeWeight' ).name( 'change weight' );
+				gui.add( paramses, 'changeBevel' ).name( 'change bevel' );
+				gui.open();
+
+				//
+
+                // Add a checkbox control
+                // gui.add(params, 'showGrid').name('Show Grid');
+
+                // Add a range control
+                // gui.add(params, 'lightIntensity', 0.0, 1.0).step(0.1).name('Light Intensity');
+
+                // You can also add folder to organize your controls
+                /*const lightingFolder = gui.addFolder('Lighting');
+                lightingFolder.add(params, 'lightIntensity', 0.0, 1.0).step(0.1).name('Intensity');
+                lightingFolder.addColor(params, 'lightColor').name('Color');
+                lightingFolder.open();*/
+
+                // Add event listeners to update your Three.js scene when the controls are changed
+                /* gui.forEach(function(controller) {
+                controller.onChange(function(value) {
+                    // Update your scene with the new value
+                    updateScene(value);
+                });
+                });*/
+                /* for (let controller of gui.controllers) {
+                        controller.onChange(function(value) {
+                            // Update your scene with the new value
+                            updateScene(value);
+                        });
+                        }*/
+
+                //}
+
+
+                      
                             const measurementDiv = document.createElement('div')
-                            measurementDiv.className = 'measurementLabel'
-                            measurementDiv.innerText = '0.0m'
+                           measurementDiv.className = 'measurementLabel'
+                           measurementDiv.innerText = '0.0m'
                             const measurementLabel = new CSS2DObject(measurementDiv)
                             measurementLabel.position.copy(intersects[0].point)
                             measurementLabels[lineId] = measurementLabel
@@ -566,11 +651,70 @@ const gui = new GUI();
                 _lastCLick = nClick;
 
             }
-        //gui function 
-			
+
+function fontload(){
+//Create the div element and add it to the page
+const container1 = document.createElement( 'div' );
+document.body.appendChild( container1 );
+
+// Create the text object using the TextGeometry constructor
+const textGeometry = new THREE.TextGeometry( 'Hello, World!', {
+  font: 10,  // specify the font to use
+  size: 10,  // specify the size of the text
+  height: 10 // specify the height of the text
+});
+
+// Create a material for the text object
+const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+// Create the text mesh using the text geometry and material
+const text = new THREE.Mesh( textGeometry, textMaterial );
+
+// Add the text mesh to the scene
+scene.add( text );
+
+// Create a GUI for controlling the text object
+const gui1 = new GUI();
+
+// Add a folder for the text object
+const textFolder = gui1.addFolder( 'Text' );
+
+// Add a control for changing the inner text of the text object
+textFolder.add( textGeometry.parameters, 'text' ).name( 'Text' ).onChange( function( value ) {
+  textGeometry.parameters.text = value;
+  textGeometry.dispose();
+  textGeometry = new TextGeometry( textGeometry.parameters );
+  text.geometry = textGeometry;
+});
+
+// Add a dropdown menu for selecting the font
+textFolder.add( textGeometry.parameters, 'font', [ 'helvetiker', 'optimer', 'gentilis', 'droid/droid_serif' ] ).name( 'Font' ).onChange( function( value ) {
+  textGeometry.parameters.font = value;
+  textGeometry.dispose();
+  textGeometry = new TextGeometry( textGeometry.parameters );
+  text.geometry = textGeometry;
+});
+
+// Add a control for changing the size of the text
+textFolder.add( textGeometry.parameters, 'size', 0, 100 ).name( 'Size' ).onChange( function( value ) {
+  textGeometry.parameters.size = value;
+  textGeometry.dispose();
+  textGeometry = new TextGeometry( textGeometry.parameters );
+  text.geometry = textGeometry;
+});
+
+// Add a control for changing the height of the text
+textFolder.add( textGeometry.parameters, 'height', 0, 100 ).name( 'Height' ).onChange( function( value ) {
+  textGeometry.parameters.height = value;
+  textGeometry.dispose();
+  textGeometry = new TextGeometry( textGeometry.parameters );
+  text.geometry = textGeometry;
+});
+
+}			
 
 
-			
+	///////////////////////////////////////////////////////		
             function translateCamera( direction ) {
 
                 controls.enabled = false;
