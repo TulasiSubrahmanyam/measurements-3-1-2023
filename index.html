@@ -384,15 +384,17 @@
                                    // geometry1.setPositions( positions );
                                    // geometry1.setColors( colors );
                             let  matLine= new THREE.LineBasicMaterial({
-                                    color:"#ff0000",
+                                   //color:"#FF0000" ,
+                                   // color:( Math.random() * 0xffffff ),
+                                   color: Math.floor(Math.random() * 16777216),
+                                    linewidth:3,
+                                    // vertexColors: true,
                                    // transparent: true,
                                      //opacity: 1,
-                                     linewidth:3,
-                                     vertexColors: true,
                                    // depthTest: false,
                                      // depthWrite: true,
-                                      dashed: false,
-					                  alphaToCoverage: true,
+                                     // dashed: false,
+					                 // alphaToCoverage: true,
                                      
                                     
                                 })
@@ -411,9 +413,9 @@ const gui = new GUI();
 // Define some parameters to control
  const params = {
  lineWidth: 3,
- color: '#ff0000',
+ color: Math.floor(Math.random() * 16777216),
  showGrid: false,
- lightIntensity: 1.0
+ //lightIntensity: 1.0
  };
 
  // Add a line width control .step(1).name('Line Width')
@@ -429,9 +431,10 @@ const gui = new GUI();
  gui.addColor(params, 'color').name('Color').onChange(function(val){
     // matLine.color=val;
     
-    matLine.color = new THREE.Color(val);
-
-     matLine.needsUpdate = true;
+   //  matLine.color =val;
+  // material.color = Math.floor(Math.random() * 16777216);
+  material.color=( Math.random() * 0xffffff );
+    // matLine.needsUpdate = true;
      console.log("matLine.Color",matLine.color)
      console.log(matLine.needsUpdate)
  });
