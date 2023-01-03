@@ -82,7 +82,7 @@
             import { RGBELoader } from './RGBELoader.js';
             import { CSS2DRenderer, CSS2DObject } from './CSS2DRenderer.js';
             import { OrientationHelper } from './OrientationHelper.js';
-          
+
             import Stats from './stats.module.js';//node_modules\three\examples\jsm\libs\stats.module.js
 			import { GPUStatsPanel } from './GPUStatsPanel.js';
 
@@ -223,7 +223,7 @@
             let drawingLine = false
          
             let pickpoint=null
-            const measurementLabels = {}
+            const measurementLabels = []
             
             let buttonClicks=document.getElementById("button-click")
 
@@ -294,11 +294,13 @@
                             controls.enableZoom = true;
                             controls.enablePan = true;
                             renderer.domElement.style.cursor = 'crosshair' 
+                         
                             let rect= renderer.domElement.getBoundingClientRect();
                             let x9 = event.touches[0].clientX - rect.left;
                             let y9 = event.touches[0].clientY - rect.top;
                             console.log("Canvas Full Coordinates",rect.top, rect.left, rect.width, rect.height);
                             console.log("Canvas Screen Coordinations"," x: " + x9, " y: " + y9);
+
                             //console.log("Single Touch")
                            // var ndcX = (event.touches[0].screenX / window.innerWidth) * 2 - 1;
                             //var ndcY = -(event.touches[0].screenY / window.innerHeight) * 2 + 1;
@@ -354,6 +356,13 @@
                           raycaster.setFromCamera(touchs, camera)
                           intersects = raycaster.intersectObjects(pickableObjects, false)
                           console.log("TouchOff World Co-ordinates:",intersects[0].point)
+                        //end pont arrow  
+                        let dot = new THREE.Mesh(
+                        new THREE.SphereGeometry(0.02),
+                        new THREE.MeshBasicMaterial({ color:"#FF0000"  })
+                        );
+                        dot.position.copy(intersects[0].point);
+                        scene.add(dot);
                         }
                         console.log("Completed Drawing Line")
                    }
@@ -373,16 +382,23 @@
                     //console.log("raycaster")
                     intersects = raycaster.intersectObjects(pickableObjects, false)
                     if (intersects.length > 0) {
-                     
-                      
-                        if (!drawingLine) {
-                            //start the line
+
+                        //dot start point
+                        let dot = new THREE.Mesh(
+                            new THREE.SphereGeometry(0.02),
+                        new THREE.MeshBasicMaterial({ color:"#FF0000"})
+                        );
+                        dot.position.copy(intersects[0].point);
+                        scene.add(dot);
+ 
+                        //start the line
                             console.log("!Drawline")
                             const points = []
-                            points.push(intersects[0].point)
-                            points.push(intersects[0].point.clone())
+                            const p=intersects[0].point
+                            points.push(p)
+                            points.push(p)
                             const geometry = new THREE.BufferGeometry().setFromPoints(points)
-                            const geometry1 = new LineGeometry();
+                           
                                    // geometry1.setPositions( positions );
                                    // geometry1.setColors( colors );
                             let  matLine= new THREE.LineBasicMaterial({
@@ -401,88 +417,90 @@
                                 })
                                 line=new THREE.LineSegments(geometry, matLine )
                    
-
-                           // let line1 =new THREE.LineMaterial({color:0xff0000,linewidth:3,dashed:false,alphaToCoverage:true})
-                            
-                            event.preventDefault()
+                               event.preventDefault()
                            // line.frustumCulled = false
-                            scene.add(line)
-                    //function initGui() {
+                              scene.add(line)
+                        //Gui functionality         
+                        //function initGui() {
 
-                    const gui = new GUI();
-                    gui.domElement.style.width = '300px';
-                    
-                    // Define some parameters to control
-                    const params = {
-                    lineWidth: 3,
-                    color:"#FF0000" ,
-                    showGrid: false,
-                    //lightIntensity: 1.0
-                    };
-
-                    const parmes={
+                        const gui = new GUI();
+                        gui.domElement.style.width = '300px';
                         
-                    }
-                    // Add a line width control .step(1).name('Line Width')
-                    gui.add(params, 'lineWidth', 1, 10).onChange( function ( val ) {
-
-                    matLine.linewidth = val;
-                    matLine.needsUpdate = true;
-                    console.log("MatLine.linewidth",matLine.linewidth)
-                    console.log(matLine.needsUpdate)
-                    } );
-
-                    // Add a color picker control
-                    gui.addColor(params, 'color').name('Line Color').onChange(function(val){
-                        // matLine.color=val;
-                        
-                        matLine.color =new THREE.Color(val);
-                       // material.color = Math.floor(Math.random() * 16777216);
-                        //material.color=val;
-                        matLine.needsUpdate = true;
-                        console.log("matLine.Color",matLine.color)
-                        console.log(matLine.needsUpdate)
-                    });
-                        const measurementControls = {
-                        fontSize: "15px",
-                        fontFamily: 'Arial',
-                        color: '#ff0000',
-                        backgroundColor: '#ffffff',
-                        padding:"3px",
-
+                        // Define some parameters to control
+                        const params = {
+                        lineWidth: 3,
+                        color:"#FF0000" ,
+                        showGrid: false,
+                        //lightIntensity: 1.0
                         };
-                        const fontsize=['10px','12px','14px','18px','20px','24px','28px','30px','32px']
-                        gui.add(measurementControls, 'fontSize', fontsize).name('Font Size').onChange(function(val) {
-                        measurementDiv.style.fontSize = val;
-                         console.log("Measurement Font Size:", measurementDiv.style.fontSize)
-                        
-                        });
-                        const fontFamilies = ['Arial', 'Helvetica', 'Times New Roman', 'Verdana', 'helvetiker', 'optimer', 'gentilis', 'droid sans', 'droid serif'];
-                        gui.add(measurementControls, 'fontFamily', fontFamilies).name('Font Family').onChange(function(val) {
-                        measurementDiv.style.fontFamily = val;
-                        console.log("Measurement Font Family:", measurementDiv.style.fontFamily)
-                     
-                        });
 
-                        gui.addColor(measurementControls, 'color').name('Font Color').onChange(function(val) {
-                        measurementDiv.style.color = val;
-                        console.log("Measurement Font Folor:", measurementDiv.style.color)
+                        const parmes={
+                            
+                        }
+                        // Add a line width control .step(1).name('Line Width')
+                        gui.add(params, 'lineWidth', 1, 10).onChange( function ( val ) {
+
+                        matLine.linewidth = val;
+                        matLine.needsUpdate = true;
+                        console.log("MatLine.linewidth",matLine.linewidth)
+                        console.log(matLine.needsUpdate)
+                        } );
+
+                        // Add a color picker control
+                        gui.addColor(params, 'color').name('Line Color').onChange(function(val){
+                            // matLine.color=val;
+                            
+                            matLine.color =new THREE.Color(val);
+                        // material.color = Math.floor(Math.random() * 16777216);
+                            //material.color=val;
+                            matLine.needsUpdate = true;
+                            console.log("matLine.Color",matLine.color)
+                            console.log(matLine.needsUpdate)
                         });
-                   
-                        gui.addColor(measurementControls, 'backgroundColor').onChange(function(val) {
-                            // Update the background color of the scene
-                            measurementDiv.style.backgroundColor=val
-                           // renderer.setClearColor(val);
+                            const measurementControls = {
+                            fontSize: "20px",
+                            fontFamily: 'Arial',
+                            color: '#ff0000',
+                            backgroundColor: '#ffffff',
+                            padding:"3px",
+
+                            };
+                            const fontsize=['10px','12px','14px','18px','20px','24px','28px','30px','32px']
+                            gui.add(measurementControls, 'fontSize', fontsize).name('Font Size').onChange(function(val) {
+                            measurementDiv.style.fontSize = val;
+                            console.log("Measurement Font Size:", measurementDiv.style.fontSize)
+                            
+                            });
+                            const fontFamilies = ['Arial', 'Helvetica', 'Times New Roman', 'Verdana', 'helvetiker', 'optimer', 'gentilis', 'droid sans', 'droid serif'];
+                            gui.add(measurementControls, 'fontFamily', fontFamilies).name('Font Family').onChange(function(val) {
+                            measurementDiv.style.fontFamily = val;
+                            console.log("Measurement Font Family:", measurementDiv.style.fontFamily)
+                        
                             });
 
-                      
-                            const measurementDiv = document.createElement('div')
+                            gui.addColor(measurementControls, 'color').name('Font Color').onChange(function(val) {
+                            measurementDiv.style.color = val;
+                            console.log("Measurement Font Folor:", measurementDiv.style.color)
+                            });
+                    
+                            gui.addColor(measurementControls, 'backgroundColor').onChange(function(val) {
+                                // Update the background color of the scene
+                                measurementDiv.style.backgroundColor=val
+                            // renderer.setClearColor(val);
+                                });
+                                // Get the intersection point
+
+
+
+                          const measurementDiv = document.createElement('div')
                            measurementDiv.className = 'measurementLabel'
                            measurementDiv.innerText = '0.0m'
                             const measurementLabel = new CSS2DObject(measurementDiv)
                             measurementLabel.position.copy(intersects[0].point)
                             measurementLabels[lineId] = measurementLabel
                            scene.add(measurementLabels[lineId])
+
+                        if (!drawingLine) {
                           // let P = intersects[0].point
                            // console.log("Touch Start World Co-ordinates",intersects[0].point)
                         let rect= renderer.domElement.getBoundingClientRect();
@@ -496,11 +514,11 @@
                         // Get the UV coordinates of the intersection point
                         const uv = intersection.uv;
                         console.log("Intersect UV Screen Coordinates",uv.x,uv.y)
-                     
+                        console.log("TouchOn World Co-ordinates:",intersects[0].point)
                             //console.log("Intersect Length",intersects.length)
                             drawingLine = true
                            // console.log("raycaster-1") 
-                         
+                          
                         } else {
                             //finish the line
                             const positions = line.geometry.attributes.position.array
@@ -538,23 +556,48 @@
                     if (intersects.length > 0) {
                        
                         const positions = line.geometry.attributes.position.array
-                        const v0 = new THREE.Vector3(positions[0], positions[1], positions[2])
-                        const v1 = new THREE.Vector3( intersects[0].point.x, intersects[0].point.y, intersects[0].point.z )
+                        const v0 = new THREE.Vector3(positions[0], positions[1], positions[2]);
+                        //camera.getWorldPosition(v0)
+                       // console.log( camera.getWorldPosition(v0))
+                       
+                        const v1 = new THREE.Vector3( intersects[0].point.x, intersects[0].point.y, intersects[0].point.z );
+                        //const v2=new THREE.Vector3( intersects[0].point.x, intersects[0].point.y, intersects[0].point.z)
+  
                         positions[3] = intersects[0].point.x
                         positions[4] = intersects[0].point.y
                         positions[5] = intersects[0].point.z
                         line.geometry.attributes.position.needsUpdate = true
                         const distance = v0.distanceTo(v1)
-                        measurementLabels[lineId].element.innerText = distance.toFixed(2) + 'm'
+                        
+                        measurementLabels[lineId].element.innerText = distance.toFixed(2) + 'm';
                         measurementLabels[lineId].position.lerpVectors(v0, v1, 0.5)
-                       
+                       let angle = v0.normalize().angleTo(v1.normalize());
+                       //let angle=v0.angleTo(v1)
+                        //console.log("Angle between v0 to v1",angle)
+                        console.log("Angle between v0 to v1",(angle* 180) / Math.PI);
+                        
+                        // Convert the angle to degrees
+                        const angleInDegrees = angle * 180 / Math.PI;
+
+                        // Compare the angle to your expected value
+                        if (angleInDegrees ===(angle* 180) / Math.PI ) {
+                        console.log('The angle is correct');
+                        } else {
+                        console.log('The angle is incorrect');
+                        }
+                        //const normal = getNormal(v0, v1);
+                        //const rotation = new THREE.Quaternion().setFromUnitVectors( v0, v1 );
+                        //console.log(rotation)
+                        
                       //  console.log("Touchmove:", measurementLabels[lineId].element.innerText = distance.toFixed(2) + 'm')
                     
+                    
                 }
-                }
-
-
+               
             }
+        }
+            
+
 
         //orbitcontrol helper
            function onOrientationHelperChange( ev ) {
@@ -576,8 +619,6 @@
                 _lastCLick = nClick;
 
             }
-
-
 
 
 
