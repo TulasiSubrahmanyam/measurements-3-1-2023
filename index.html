@@ -315,13 +315,10 @@
                             // Cast the ray and get the intersects array
                             /*raycaster.setFromCamera(touchs, camera);
                             intersects = raycaster.intersectObjects(pickableObjects,false);
-
                             // Get the first intersection point
                             const intersection = intersects[0];
-
                             // Get the UV coordinates of the intersection point
                             const uv = intersection.uv;
-
                             // Get the minimum and maximum UV coordinates
                             const minU = Math.min(0,uv.x);
                             const maxU = Math.max(uv.x);
@@ -336,39 +333,7 @@
                
        
 
-              function touchoff(event) {
-              //  console.log("Touch End Screen Co-ordinates",touchs)
-            
-                     ctrlDown = false
-                     //controls.enabled=true
-                   // controls.enableZoom=true
-                    
-                    renderer.domElement.style.cursor = 'pointer'
-                    if (drawingLine) {
-                        //delete the last line because it wasn't committed
-                        // scene.remove(line)
-                         //scene.remove(measurementLabels[lineId])
-                         drawingLine = false
-                         controls.enableRotate=false
-                         event.preventDefault()
-                        // let P = intersects[0].point
-                        if(intersects.length>0){
-                          raycaster.setFromCamera(touchs, camera)
-                          intersects = raycaster.intersectObjects(pickableObjects, false)
-                          console.log("TouchOff World Co-ordinates:",intersects[0].point)
-                        //end pont arrow  
-                        let dot = new THREE.Mesh(
-                        new THREE.SphereGeometry(0.02),
-                        new THREE.MeshBasicMaterial({ color:"#FF0000"  })
-                        );
-                        dot.position.copy(intersects[0].point);
-                        scene.add(dot);
-                        }
-                        console.log("Completed Drawing Line")
-                   }
-                
-            }
-
+             
      
 
            
@@ -385,7 +350,7 @@
 
                         //dot start point
                         let dot = new THREE.Mesh(
-                            new THREE.SphereGeometry(0.02),
+                            new THREE.SphereGeometry(0.04),
                         new THREE.MeshBasicMaterial({ color:"#FF0000"})
                         );
                         dot.position.copy(intersects[0].point);
@@ -434,9 +399,7 @@
                         //lightIntensity: 1.0
                         };
 
-                        const parmes={
-                            
-                        }
+                       
                         // Add a line width control .step(1).name('Line Width')
                         gui.add(params, 'lineWidth', 1, 10).onChange( function ( val ) {
 
@@ -490,6 +453,26 @@
                                 });
                                 // Get the intersection point
 
+                            // create a folder in the GUI to control the dot's properties
+                            const dotFolder = gui.addFolder('Dot Start');
+
+                            // add a color controller to the GUI
+                            const colorController = dotFolder.addColor(dot.material, 'color');
+
+                            // update the dot's color when the controller value changes
+                            colorController.onChange(function(value) {
+                            dot.material.color.set(value);
+                            });
+
+                            // add a scale controller to the GUI
+                            const scaleController = dotFolder.add(dot.scale, 'x', 0.1, 10).name('Start Point');
+
+                            // update the dot's scale when the controller value changes
+                            scaleController.onChange(function(value) {
+                            dot.scale.set(value, value, value);
+                            });
+                            
+
 
 
                           const measurementDiv = document.createElement('div')
@@ -536,6 +519,8 @@
                 }
             }
      
+           
+
             function onDocumentTouchMove(e) {
               //  console.log("Touch Move")
                 //event.preventDefault()  
@@ -597,7 +582,39 @@
             }
         }
             
-
+        function touchoff(event) {
+              //  console.log("Touch End Screen Co-ordinates",touchs)
+            
+                     ctrlDown = false
+                     //controls.enabled=true
+                   // controls.enableZoom=true
+                    
+                    renderer.domElement.style.cursor = 'pointer'
+                    if (drawingLine) {
+                        //delete the last line because it wasn't committed
+                        // scene.remove(line)
+                         //scene.remove(measurementLabels[lineId])
+                         drawingLine = false
+                         controls.enableRotate=false
+                         event.preventDefault()
+                        // let P = intersects[0].point
+                        if(intersects.length>0){
+                          raycaster.setFromCamera(touchs, camera)
+                          intersects = raycaster.intersectObjects(pickableObjects, false)
+                          console.log("TouchOff World Co-ordinates:",intersects[0].point)
+                        //end pont arrow  
+                        let dot = new THREE.Mesh(
+                        new THREE.SphereGeometry(0.04),
+                        new THREE.MeshBasicMaterial({ color:"#FF0000"  })
+                        );
+                        dot.position.copy(intersects[0].point);
+                        scene.add(dot);
+                       
+                        }
+                        console.log("Completed Drawing Line")
+                   }
+                
+            }
 
         //orbitcontrol helper
            function onOrientationHelperChange( ev ) {
