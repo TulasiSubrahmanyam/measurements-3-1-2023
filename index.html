@@ -20,15 +20,27 @@
             }
 
             .measurementLabel {
-                
                 background-color: rgb(36, 35, 35);
                 color: rgb(255, 255, 255);
-             
                 font-size:20px;
                 font-weight: 500;
-                padding: 2px;
                 font-family: "Roboto";
+                padding: 2px;
                 border-radius: 2px;
+            }
+            .labelstyle{
+                background-color: transparent;
+                color: rgb(5, 5, 5);
+                font-size:20px;
+                font-weight: 500;
+                font-family: "Roboto";
+            }
+            .angleLabel{
+                background-color: transparent;
+                color: rgb(15, 15, 14);
+                font-size:20px;
+                font-weight: 500;
+                font-family: "Roboto";
             }
             #button-click{
                 color:white;
@@ -219,12 +231,13 @@
         
             let ctrlDown = false
             let lineId = 0
+            let lineID1=0
             let line
             let drawingLine = false
          
             let pickpoint=null
             const measurementLabels = []
-            
+            const angleLabels=[]
             let buttonClicks=document.getElementById("button-click")
 
 
@@ -331,11 +344,6 @@
                     }
                   
                
-       
-
-             
-     
-
            
            function onlyClick(event) {
            
@@ -355,6 +363,15 @@
                         );
                         dot.position.copy(intersects[0].point);
                         scene.add(dot);
+                        const label = document.createElement('div');
+                        label.className = 'labelstyle'
+                        label.innerText = `P1,X: ${dot.position.x.toFixed(3)}, Y: ${dot.position.y.toFixed(3)}, Z: ${dot.position.z.toFixed(3)}`;
+                        const label3D = new CSS2DObject(label)
+                        label3D.position.copy(intersects[0].point)
+                        label3D.position.y += 0.1; //position above shows
+                        // Add the label to the scene
+                        scene.add(label3D);
+                        // Create a label to display the dot's coordinates
  
                         //start the line
                             console.log("!Drawline")
@@ -366,7 +383,7 @@
                            
                                    // geometry1.setPositions( positions );
                                    // geometry1.setColors( colors );
-                            let  matLine= new THREE.LineBasicMaterial({
+                            let matLine= new THREE.LineBasicMaterial({
                                      color:"#FF0000" ,
                                    // color:( Math.random() * 0xffffff ),
                                   // color: Math.floor( 16777216),
@@ -475,17 +492,25 @@
 
 
 
-                          const measurementDiv = document.createElement('div')
+                            const angleDiv = document.createElement('div');
+                            angleDiv.className = 'angleLabel'; // add a class to style the label
+                            angleDiv.innerText = '0.0°'; // set the initial label text
+                            const angleLabel = new CSS2DObject(angleDiv);
+                            angleLabel.position.copy(intersects[0].point); // set the label position
+                            angleLabels[lineId] = angleLabel; // add the label object to the angleLabels array
+                            //angleLabels.position.y += 0.5; // position the label above the point
+                            scene.add(angleLabels[lineId]); // add the label to the scene
+
+                           const measurementDiv = document.createElement('div')
                            measurementDiv.className = 'measurementLabel'
                            measurementDiv.innerText = '0.0m'
-                            const measurementLabel = new CSS2DObject(measurementDiv)
-                            measurementLabel.position.copy(intersects[0].point)
-                            measurementLabels[lineId] = measurementLabel
+                           const measurementLabel = new CSS2DObject(measurementDiv)
+                           measurementLabel.position.copy(intersects[0].point)
+                           measurementLabels[lineId] = measurementLabel
                            scene.add(measurementLabels[lineId])
 
                         if (!drawingLine) {
-                          // let P = intersects[0].point
-                           // console.log("Touch Start World Co-ordinates",intersects[0].point)
+                          
                         let rect= renderer.domElement.getBoundingClientRect();
                         let x9 = event.clientX - rect.left;
                         let y9 = event.clientY - rect.top;
@@ -510,10 +535,9 @@
                             positions[5] = intersects[0].point.z
                             line.geometry.attributes.position.needsUpdate = true
                             lineId++
+                            lineID1++
                             drawingLine = false
                             //console.log("raycaster-2") 
-                         
-                            
                         }
                     }
                 }
@@ -527,13 +551,7 @@
         
                 touchs.x= (event.targetTouches[0].clientX / renderer.domElement.clientWidth) * 2 - 1;
                 touchs.y= -(event.targetTouches[0].clientY / renderer.domElement.clientHeight) * 2 + 1;
-               /* if (event.targetTouches.length === 2) {
-                let hypo1 = Math.hypot((event.targetTouches[0].pageX - event.targetTouches[1].pageX),
-                                          (event.targetTouches[0].pageY - event.targetTouches[1].pageY));
-                  if (hypo === undefined) {
-                   hypo = hypo1;
-                   }
-                  }*/
+             
               
                 if (drawingLine) {
                     raycaster.setFromCamera(touchs, camera)
@@ -542,34 +560,36 @@
                        
                         const positions = line.geometry.attributes.position.array
                         const v0 = new THREE.Vector3(positions[0], positions[1], positions[2]);
-                        //camera.getWorldPosition(v0)
-                       // console.log( camera.getWorldPosition(v0))
-                       
                         const v1 = new THREE.Vector3( intersects[0].point.x, intersects[0].point.y, intersects[0].point.z );
                         //const v2=new THREE.Vector3( intersects[0].point.x, intersects[0].point.y, intersects[0].point.z)
   
                         positions[3] = intersects[0].point.x
                         positions[4] = intersects[0].point.y
                         positions[5] = intersects[0].point.z
-                        line.geometry.attributes.position.needsUpdate = true
                         const distance = v0.distanceTo(v1)
+                        line.geometry.attributes.position.needsUpdate = true
                         
                         measurementLabels[lineId].element.innerText = distance.toFixed(2) + 'm';
-                        measurementLabels[lineId].position.lerpVectors(v0, v1, 0.5)
-                       let angle = v0.normalize().angleTo(v1.normalize());
-                       //let angle=v0.angleTo(v1)
-                        //console.log("Angle between v0 to v1",angle)
-                        console.log("Angle between v0 to v1",(angle* 180) / Math.PI);
+                        measurementLabels[lineId].position.lerpVectors(v0, v1,0.5)
                         
+                        const angle = v0.normalize().angleTo(v1.normalize());
+                    
+                       // angleLabels[lineId].position.lerpVectors(v1,v0,0.0000005)
+                        angleLabels[lineId].element.innerText = ((angle * 180) / Math.PI).toFixed(2) + '°';
+                      
+                        //console.log("Angle between v0 to v1",angle)
+                        console.log("Angle between v0 to v1",((angle* 180) / Math.PI).toFixed(2));
+                       // Add the label to the scene
                         // Convert the angle to degrees
-                        const angleInDegrees = angle * 180 / Math.PI;
+                       // const angleInDegrees = angle * 180 / Math.PI;
 
                         // Compare the angle to your expected value
-                        if (angleInDegrees ===(angle* 180) / Math.PI ) {
+                      /*  if (angleInDegrees ===(angle* 180) / Math.PI ) {
                         console.log('The angle is correct');
                         } else {
                         console.log('The angle is incorrect');
-                        }
+                        }*/
+                      
                         //const normal = getNormal(v0, v1);
                         //const rotation = new THREE.Quaternion().setFromUnitVectors( v0, v1 );
                         //console.log(rotation)
@@ -609,7 +629,15 @@
                         );
                         dot.position.copy(intersects[0].point);
                         scene.add(dot);
-                       
+                       // Create a label to display the dot's coordinates
+                        const label = document.createElement('div');
+                        label.className = 'labelstyle'
+                        label.innerText = `P2,X: ${dot.position.x.toFixed(3)}, Y: ${dot.position.y.toFixed(3)}, Z: ${dot.position.z.toFixed(3)}`;
+                        const label3D = new CSS2DObject(label)
+                        label3D.position.copy(intersects[0].point)
+                        label3D.position.y += 0.1; //position above shows
+                        // Add the label to the scene
+                        scene.add(label3D);
                         }
                         console.log("Completed Drawing Line")
                    }
@@ -638,9 +666,7 @@
             }
 
 
-
-
-	///////////////////////////////////////////////////////		
+         //////////////////////////////////////////////	
             function translateCamera( direction ) {
 
                 controls.enabled = false;
@@ -658,18 +684,14 @@
             var animate = function () {
                 requestAnimationFrame(animate)
                 controls.update()
-                render()
-              
-			
+                render()			
             }
             
             function render() {
                 
                 labelRenderer.render(scene, camera)
                 renderer.render(scene, camera)
-                camera.updateMatrixWorld()
-                
-                
+                camera.updateMatrixWorld()       
             }
             animate()
             window.focus()
