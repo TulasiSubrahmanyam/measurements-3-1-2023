@@ -239,7 +239,7 @@
             const measurementLabels = []
             const angleLabels=[]
             let buttonClicks=document.getElementById("button-click")
-
+            var screenCoords = new THREE.Vector3();
 
             buttonClicks.onclick=function(event){
                 if(buttonClicks.value==="off"){
@@ -314,31 +314,6 @@
                             console.log("Canvas Full Coordinates",rect.top, rect.left, rect.width, rect.height);
                             console.log("Canvas Screen Coordinations"," x: " + x9, " y: " + y9);
 
-                            //console.log("Single Touch")
-                           // var ndcX = (event.touches[0].screenX / window.innerWidth) * 2 - 1;
-                            //var ndcY = -(event.touches[0].screenY / window.innerHeight) * 2 + 1;
-                            //console.log("new cor",ndcX,ndcY)
-                            //console.log(" Touch Start Screen Co-ordinates",touchs)
-                            // console.log(e.touches.length)
-                           // raycaster.setFromCamera(touchs, camera)
-                            //console.log("raycaster")
-                           //intersects = raycaster.intersectObjects(pickableObjects, false)
-                            //console.log(intersects)
-
-                            // Cast the ray and get the intersects array
-                            /*raycaster.setFromCamera(touchs, camera);
-                            intersects = raycaster.intersectObjects(pickableObjects,false);
-                            // Get the first intersection point
-                            const intersection = intersects[0];
-                            // Get the UV coordinates of the intersection point
-                            const uv = intersection.uv;
-                            // Get the minimum and maximum UV coordinates
-                            const minU = Math.min(0,uv.x);
-                            const maxU = Math.max(uv.x);
-                            const minV = Math.min(0,uv.y);
-                            const maxV = Math.max(uv.y);
-                            console.log("Min X",minU,"Min Y",minV)
-                            console.log("Max X",maxU,"Max Y",maxV)*/
                         
                         } 
                     }
@@ -362,17 +337,45 @@
                         new THREE.MeshBasicMaterial({ color:"#FF0000"})
                         );
                         dot.position.copy(intersects[0].point);
+                        
+                     //  let dot1Position= dot.position.copy(uv)
+                      
                         scene.add(dot);
+                        //world coordinates
                         const label = document.createElement('div');
                         label.className = 'labelstyle'
-                        label.innerText = `P1,X: ${dot.position.x.toFixed(3)}, Y: ${dot.position.y.toFixed(3)}, Z: ${dot.position.z.toFixed(3)}`;
+                        label.innerText = `P1(X: ${dot.position.x.toFixed(3)}, Y: ${dot.position.y.toFixed(3)}, Z: ${dot.position.z.toFixed(3)})`;
                         const label3D = new CSS2DObject(label)
                         label3D.position.copy(intersects[0].point)
                         label3D.position.y += 0.1; //position above shows
                         // Add the label to the scene
                         scene.add(label3D);
-                        // Create a label to display the dot's coordinates
- 
+                        // Create a label screen coordinates
+                           
+                        const labe2 = document.createElement('div');
+                        labe2.className = 'labelstyle'
+                       
+                        screenCoords.set(intersects[0].point.x,intersects[0].point.y,intersects[0].point.z);
+                       // console.log("screennewone",screenCoords.set(intersects[0].point.x,intersects[0].point.y,intersects[0].point.z))
+                        screenCoords.project(camera);
+                        //console.log("projet",screenCoords)
+                        // Convert from normalized coordinates to screen coordinates
+                        screenCoords.x =Math.round((screenCoords.x + 1) * window.innerWidth / 2);
+                        screenCoords.y =Math.round((-screenCoords.y + 1) * window.innerHeight / 2);
+
+                        //console.log("newone",screenCoords.x,screenCoords.y)
+                        // Use the screen coordinates to update the label
+                        labe2.innerText = `P1 ScreenCoordinates(X: ${screenCoords.x}, Y:${screenCoords.y})`;
+                        console.log(`P1 ScreenCoordinates(X: ${screenCoords.x}, Y:${screenCoords.y})`)
+                      //  labe2.innerText = `P1 screen,X: ${dot1Position.x.toFixed(3)}, Y: ${dot1Position.y.toFixed(3)}`;
+                        const label13D = new CSS2DObject(labe2)
+                        label13D.position.copy(intersects[0].point)
+                        label13D.position.y += 0.3; //position above shows
+                      
+
+                       // console.log("Intersect UV Screen Coordinates",,uv.y)
+                        // Add the label to the scene
+                        scene.add(label13D);
                         //start the line
                             console.log("!Drawline")
                             const points = []
@@ -385,16 +388,14 @@
                                    // geometry1.setColors( colors );
                             let matLine= new THREE.LineBasicMaterial({
                                      color:"#FF0000" ,
-                                   // color:( Math.random() * 0xffffff ),
-                                  // color: Math.floor( 16777216),
-                                    linewidth:3,
-                                    // vertexColors: true,
-                                   // transparent: true,
+                                     linewidth:3,
+                                     //vertexColors: true,
+                                     //transparent: true,
                                      //opacity: 1,
-                                   // depthTest: false,
-                                     // depthWrite: true,
-                                     // dashed: false,
-					                 // alphaToCoverage: true,
+                                     //depthTest: false,
+                                     //depthWrite: true,
+                                     //dashed: false,
+					                 //alphaToCoverage: true,
                             
                                 })
                                 line=new THREE.LineSegments(geometry, matLine )
@@ -497,8 +498,9 @@
                             angleDiv.innerText = '0.0°'; // set the initial label text
                             const angleLabel = new CSS2DObject(angleDiv);
                             angleLabel.position.copy(intersects[0].point); // set the label position
+                             angleLabel.position.z+=0.2
                             angleLabels[lineId] = angleLabel; // add the label object to the angleLabels array
-                            //angleLabels.position.y += 0.5; // position the label above the point
+                           // angleLabels.position.z += 0.1;//position above shows
                             scene.add(angleLabels[lineId]); // add the label to the scene
 
                            const measurementDiv = document.createElement('div')
@@ -567,18 +569,17 @@
                         positions[4] = intersects[0].point.y
                         positions[5] = intersects[0].point.z
                         const distance = v0.distanceTo(v1)
+                        
                         line.geometry.attributes.position.needsUpdate = true
                         
                         measurementLabels[lineId].element.innerText = distance.toFixed(2) + 'm';
-                        measurementLabels[lineId].position.lerpVectors(v0, v1,0.5)
-                        
+                        measurementLabels[lineId].position.lerpVectors(v0, v1,0.5);
+
                         const angle = v0.normalize().angleTo(v1.normalize());
-                    
-                       // angleLabels[lineId].position.lerpVectors(v1,v0,0.0000005)
                         angleLabels[lineId].element.innerText = ((angle * 180) / Math.PI).toFixed(2) + '°';
-                      
+                        //angleLabel.position.lerpVectors(v0,v1,0.5)
                         //console.log("Angle between v0 to v1",angle)
-                        console.log("Angle between v0 to v1",((angle* 180) / Math.PI).toFixed(2));
+                        console.log("Angle between v0 to v1",((angle* 180) / Math.PI));
                        // Add the label to the scene
                         // Convert the angle to degrees
                        // const angleInDegrees = angle * 180 / Math.PI;
@@ -632,12 +633,36 @@
                        // Create a label to display the dot's coordinates
                         const label = document.createElement('div');
                         label.className = 'labelstyle'
-                        label.innerText = `P2,X: ${dot.position.x.toFixed(3)}, Y: ${dot.position.y.toFixed(3)}, Z: ${dot.position.z.toFixed(3)}`;
+                        label.innerText = `P2(X: ${dot.position.x.toFixed(3)},Y: ${dot.position.y.toFixed(3)}, Z: ${dot.position.z.toFixed(3)})`;
                         const label3D = new CSS2DObject(label)
                         label3D.position.copy(intersects[0].point)
                         label3D.position.y += 0.1; //position above shows
                         // Add the label to the scene
                         scene.add(label3D);
+                        const labe2 = document.createElement('div');
+                        labe2.className = 'labelstyle'
+                       
+                        screenCoords.set(intersects[0].point.x,intersects[0].point.y,intersects[0].point.z);
+                       // console.log("screennewone",screenCoords.set(intersects[0].point.x,intersects[0].point.y,intersects[0].point.z))
+                        screenCoords.project(camera);
+                        //console.log("projet",screenCoords)
+                        // Convert from normalized coordinates to screen coordinates
+                        screenCoords.x =Math.round((screenCoords.x + 1) * window.innerWidth / 2);
+                        screenCoords.y =Math.round((-screenCoords.y + 1) * window.innerHeight / 2);
+
+                        //console.log("newone",screenCoords.x,screenCoords.y)
+                        // Use the screen coordinates to update the label
+                        labe2.innerText = `P2 ScreenCoordinates(X: ${screenCoords.x} Y:${screenCoords.y})`;
+                        console.log(`P2 ScreenCoordinates(X: ${screenCoords.x}, Y:${screenCoords.y})`)
+                      //  labe2.innerText = `P1 screen,X: ${dot1Position.x.toFixed(3)}, Y: ${dot1Position.y.toFixed(3)}`;
+                        const label13D = new CSS2DObject(labe2)
+                        label13D.position.copy(intersects[0].point)
+                        label13D.position.y += 0.3; //position above shows
+                      
+
+                       // console.log("Intersect UV Screen Coordinates",,uv.y)
+                        // Add the label to the scene
+                        scene.add(label13D);
                         }
                         console.log("Completed Drawing Line")
                    }
