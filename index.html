@@ -44,16 +44,25 @@
             }
             #button-click{
                 color:white;
-                background-color: red;
+                background-color: rgb(241, 62, 62);
                 border-radius: 10px;
-           
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
+                border: none;
+                text-align: center;
                 top: 300px;
                 margin: 20px;
                 height: 40px;
-                
+                width: 110px;
+            }
+            #hidedata{
+                color:white;
+                background-color: rgb(241, 62, 62);
+                border-radius: 10px;
+                width: 80px;
+                border: none;
+                text-align: center;
+                top: 300px;
+                margin: 20px;
+                height: 40px;
             }
             .orientation-helper-in-scene {
 			position: fixed;
@@ -83,7 +92,8 @@
             Click again to mark the end of the line.
             
             <button id="button-click" value="off">Measurements </button>
-
+            
+            <button id="hidedata" value="on"> Hide Text</button>
         </div>
         
 
@@ -120,7 +130,7 @@
             camera.position.x = 15
             camera.position.y = 15
             camera.position.z = 15
-           
+            ;
 
             const renderer = new THREE.WebGLRenderer()
             renderer.physicallyCorrectLights = true;
@@ -148,7 +158,9 @@
            controls.enabled=true
 
            const container=document.getElementById("container")
-           
+           const toggleButton=document.getElementById("hidedata")
+
+
            const pickableObjects = new Array()
             const loader = new GLTFLoader()
             loader.load(
@@ -221,7 +233,7 @@
             let lineID1=0
             let line
             let drawingLine = false
-            let measurementDiv ,matLine ,dot1,dot2, angleDiv ,label1, label2
+            let measurementDiv ,matLine ,dot1,dot2, angleDiv ,labelText1,labelText1D,labelText2, labelText2D,labelText3,labelText3D,labelText4,labelText4D
             let pickpoint=null
             const measurementLabels = []
             const angleLabels=[]
@@ -267,23 +279,6 @@ const layers = {
 
   
     camera.layers.toggle( 0 );
-
-},
-'Toggle Mass': function () {
-
-    camera.layers.toggle( 1 );
-   
-
-},
-'Enable All': function () {
-
-    camera.layers.enableAll();
-
-},
-
-'Disable All': function () {
-
-    camera.layers.disableAll();
 
 }
 
@@ -332,35 +327,29 @@ const layers = {
                     initDot1()
 
                     //--------world coordinates creating-------
-                    label1 = document.createElement('div');
-                    label1.className = 'labelstyle'
-                    label1.innerText = `P1(X: ${dot1.position.x.toFixed(3)}, Y: ${dot1.position.y.toFixed(3)}, Z: ${dot1.position.z.toFixed(3)})`;
-                    const label3D = new CSS2DObject(label1)
-                    label3D.position.copy(intersects[0].point)
-                    label3D.position.y += 0.1; //position above shows                    
-                    scene.add(label3D);
+                    labelText1 = document.createElement('div');
+                    labelText1.className = 'labelstyle'
+                    labelText1.innerText = `P1(X: ${dot1.position.x.toFixed(3)}, Y: ${dot1.position.y.toFixed(3)}, Z: ${dot1.position.z.toFixed(3)})`;
+                    labelText1D = new CSS2DObject(labelText1)
+                    labelText1D.position.copy(intersects[0].point)
+                    labelText1D.position.y += 0.1; //position above shows                    
+                    scene.add(labelText1D);
                
 
                 
                     //------Screencoordinates dispalying picking point creating------   
-                    label2 = document.createElement('div');
-                    label2.className = 'labelstyle'
+                    labelText2 = document.createElement('div');
+                    labelText2.className = 'labelstyle'
                     screenCoords.set(intersects[0].point.x,intersects[0].point.y,intersects[0].point.z);
-                    //console.log("screennewone",screenCoords.set(intersects[0].point.x,intersects[0].point.y,intersects[0].point.z))
                     screenCoords.project(camera);
-                    //console.log("projet",screenCoords)
-                    // Convert from normalized coordinates to screen coordinates
                     screenCoords.x =Math.round((screenCoords.x + 1) * window.innerWidth / 2);
                     screenCoords.y =Math.round((-screenCoords.y + 1) * window.innerHeight / 2);
-                    //console.log("newone",screenCoords.x,screenCoords.y)
-                    // Use the screen coordinates to update the label
-                    label2.innerText = `P1 ScreenCoordinates(X: ${screenCoords.x}, Y:${screenCoords.y})`;
+                    labelText2.innerText = `P1 ScreenCoordinates(X: ${screenCoords.x}, Y:${screenCoords.y})`;
                     console.log(`P1 ScreenCoordinates(X: ${screenCoords.x}, Y:${screenCoords.y})`)
-                    //labe2.innerText = `P1 screen,X: ${dot1Position.x.toFixed(3)}, Y: ${dot1Position.y.toFixed(3)}`;
-                    const label13D = new CSS2DObject(label2)
-                    label13D.position.copy(intersects[0].point)
-                    label13D.position.y += 0.3; 
-                    scene.add(label13D);
+                    labelText2D = new CSS2DObject(labelText2)
+                    labelText2D.position.copy(intersects[0].point)
+                    labelText2D.position.y += 0.3; 
+                    scene.add(labelText2D);
 
 
                //------start the line creation----
@@ -498,17 +487,17 @@ const layers = {
                           initDot2()
 
                        //--------Create a label to display the dotpoint coordinates---------
-                        const label = document.createElement('div');
-                        label.className = 'labelstyle'
-                        label.innerText = `P2(X: ${dot2.position.x.toFixed(3)},Y: ${dot2.position.y.toFixed(3)}, Z: ${dot2.position.z.toFixed(3)})`;
-                        const label3D = new CSS2DObject(label)
-                        label3D.position.copy(intersects[0].point)
-                        label3D.position.y += 0.1; //position above shows
-                        scene.add(label3D);
+                        labelText3 = document.createElement('div');
+                        labelText3.className = 'labelstyle'
+                        labelText3.innerText = `P2(X: ${dot2.position.x.toFixed(3)},Y: ${dot2.position.y.toFixed(3)}, Z: ${dot2.position.z.toFixed(3)})`;
+                         labelText3D = new CSS2DObject(labelText3)
+                        labelText3D.position.copy(intersects[0].point)
+                        labelText3D.position.y += 0.1; //position above shows
+                        scene.add(labelText3D);
 
                         //-------Create a label to display the dotpoint screencoordinates-------
-                        const labe2 = document.createElement('div');
-                        labe2.className = 'labelstyle'
+                       labelText4 = document.createElement('div');
+                       labelText4.className = 'labelstyle'
                         screenCoords.set(intersects[0].point.x,intersects[0].point.y,intersects[0].point.z);
                         //console.log("screennewone",screenCoords.set(intersects[0].point.x,intersects[0].point.y,intersects[0].point.z))
                         screenCoords.project(camera);
@@ -518,14 +507,14 @@ const layers = {
                         screenCoords.y =Math.round((-screenCoords.y + 1) * window.innerHeight / 2);
                         //console.log("newone",screenCoords.x,screenCoords.y)
                         // Use the screen coordinates to update the label
-                        labe2.innerText = `P2 ScreenCoordinates(X: ${screenCoords.x} Y:${screenCoords.y})`;
+                        labelText4.innerText = `P2 ScreenCoordinates(X: ${screenCoords.x} Y:${screenCoords.y})`;
                         console.log(`P2 ScreenCoordinates(X: ${screenCoords.x}, Y:${screenCoords.y})`)
                         //labe2.innerText = `P1 screen,X: ${dot1Position.x.toFixed(3)}, Y: ${dot1Position.y.toFixed(3)}`;
-                        const label13D = new CSS2DObject(labe2)
-                        label13D.position.copy(intersects[0].point)
-                        label13D.position.y += 0.3; //position above shows
+                        labelText4D = new CSS2DObject( labelText4)
+                        labelText4D.position.copy(intersects[0].point)
+                        labelText4D.position.y += 0.3; //position above shows
                        
-                        scene.add(label13D);
+                        scene.add(labelText4D);
 
 
                         }
@@ -533,6 +522,7 @@ const layers = {
                    }
                 
             }
+          
 
 //-----------GUI Function Implementation----------------
          
@@ -639,22 +629,10 @@ const layers = {
 
                            //------lable text show hide controls------
                            const folder = gui.addFolder('Label1');
-                          const param={
-                            in
-                          }
-                           const labelVisibleControl = folder.add(, 'visible').name('Visibility');
-
-
-// Add a listener to the control to show or hide the label when the control value changes
-labelVisibleControl.onChange(function(value) {
-  if (value) {
-    scene.add(label3D);
-  } else {
-    scene.remove(label3D);
-  }
-});
+                           gui.add( layers, 'Toggle Name' )
                            
               }
+
 
                     //-----Dotcreating function----
                     function initDot1(){
@@ -693,6 +671,30 @@ labelVisibleControl.onChange(function(value) {
             _lastCLick = nClick;
           }
 
+
+
+         
+            toggleButton.onclick=function(event){
+                console.log("ToggleButton")
+                if(toggleButton.value==="on"){
+                toggleButton.value ="off"
+                scene.remove(labelText1D)
+                scene.remove(labelText2D)
+                scene.remove(labelText3D)
+                scene.remove(labelText4D)
+                scene.remove(angleLabels[lineId])
+                toggleButton.innerHTML="Show Text"
+                }
+                else if(toggleButton.value==="off"){
+                scene.add(labelText1D)
+                scene.add(labelText2D)
+                scene.add(labelText3D)
+                scene.add(labelText4D)
+                scene.add(angleLabels[lineId])
+                toggleButton.value ="on"
+                toggleButton.innerHTML="Hide Text"
+                }
+            }
            //-----------------------------------------//
            function translateCamera( direction ) {
 
