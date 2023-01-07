@@ -73,6 +73,11 @@
 			z-index: 0;
             
 		}
+        .buttonContainer{
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+        }
         </style>
        
         <script type="importmap">
@@ -90,10 +95,11 @@
         <div id="instructions">
             Press CTRL + Left Mouse Click to start drawing a line. <br />Continue to hold CTRL and Left Mouse
             Click again to mark the end of the line.
-            
+            <div class="buttonContiner">
             <button id="button-click" value="off">Measurements </button>
             
             <button id="hidedata" value="on"> Hide Text</button>
+            </div>
         </div>
         
 
@@ -333,7 +339,7 @@ const layers = {
                     labelText1D = new CSS2DObject(labelText1)
                     labelText1D.position.copy(intersects[0].point)
                     labelText1D.position.y += 0.1; //position above shows                    
-                    scene.add(labelText1D);
+                  //  scene.add(labelText1D);
                
 
                 
@@ -349,7 +355,7 @@ const layers = {
                     labelText2D = new CSS2DObject(labelText2)
                     labelText2D.position.copy(intersects[0].point)
                     labelText2D.position.y += 0.3; 
-                    scene.add(labelText2D);
+                   // scene.add(labelText2D);
 
 
                //------start the line creation----
@@ -378,7 +384,7 @@ const layers = {
                    angleLabel.position.copy(intersects[0].point); 
                     angleLabel.position.z+=0.2
                    angleLabels[lineId] = angleLabel;
-                   scene.add(angleLabels[lineId]); 
+                  // scene.add(angleLabels[lineId]); 
                  
                //----measurement text content create-----
                   measurementDiv = document.createElement('div')
@@ -493,7 +499,7 @@ const layers = {
                          labelText3D = new CSS2DObject(labelText3)
                         labelText3D.position.copy(intersects[0].point)
                         labelText3D.position.y += 0.1; //position above shows
-                        scene.add(labelText3D);
+                      //  scene.add(labelText3D);
 
                         //-------Create a label to display the dotpoint screencoordinates-------
                        labelText4 = document.createElement('div');
@@ -514,7 +520,7 @@ const layers = {
                         labelText4D.position.copy(intersects[0].point)
                         labelText4D.position.y += 0.3; //position above shows
                        
-                        scene.add(labelText4D);
+                       // scene.add(labelText4D);
 
 
                         }
